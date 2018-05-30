@@ -934,6 +934,7 @@ void draw_main_camera_axes(int cam_index) {
 
 
 #define N_TIGER_FRAMES 12
+GLuint tiger_VBO, tiger_VAO;
 Object tiger[N_TIGER_FRAMES];
 struct {
 	int cur_frame = 0;
@@ -970,6 +971,20 @@ void define_animated_tiger(void) {
 		tiger[i].material[0].specular_color[3] = 1.0f;
 		tiger[i].material[0].specular_exponent = 128.0f*0.21794872f;
 	}
+	
+	// Initialize vertex array object.
+	glGenVertexArrays(1, &tiger_VAO);
+	glBindVertexArray(tiger_VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, tiger_VBO);
+	glVertexAttribPointer(LOC_VERTEX, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(LOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), BUFFER_OFFSET(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	
 }
 void set_material_tiger(void) {
 	// assume ShaderProgram_PS is used
@@ -1016,7 +1031,6 @@ TIGER_POINT tiger_point[NUM_POINTS] = {
 };
 
 void draw_animated_tiger(int cam_index) {
-
 	int i;
 	float rot = 15.0f;
 	tiger_point[0].rot_angle = TIGER_DEFAULT_ROT;
@@ -1042,7 +1056,10 @@ void draw_animated_tiger(int cam_index) {
 	ModelViewMatrix[cam_index] *= tiger[tiger_data.cur_frame].ModelMatrix[0];	// ModelMatrix[0]만 scale(0.2,0.2,0.2)가 됐으므로 여기는 ModelMatrix[cam_index]가 아니라 ModelMatrix[0]을 써줘야함.
 
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
-	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
+	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 
 	glUniform3f(loc_primitive_color, tiger[tiger_data.cur_frame].material[0].diffuse_color[0],
 		tiger[tiger_data.cur_frame].material[0].diffuse_color[1], tiger[tiger_data.cur_frame].material[0].diffuse_color[2]);
@@ -1050,6 +1067,7 @@ void draw_animated_tiger(int cam_index) {
 	glBindVertexArray(tiger[tiger_data.cur_frame].VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * tiger[tiger_data.cur_frame].n_triangles);
 	glBindVertexArray(0);
+
 	ModelViewProjectionMatrix = glm::scale(ModelViewProjectionMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 }
