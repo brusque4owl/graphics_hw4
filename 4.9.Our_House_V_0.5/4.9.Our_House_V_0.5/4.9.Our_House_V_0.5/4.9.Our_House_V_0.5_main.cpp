@@ -304,7 +304,7 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 
-	/*
+	
 	case 'c':
 		flag_cull_face = (flag_cull_face + 1) % 3;
 		switch (flag_cull_face) {
@@ -353,7 +353,7 @@ void keyboard(unsigned char key, int x, int y) {
 		}
 		glutPostRedisplay();
 		break;
-
+		/*
 	case 't':	// used for debugging tiger path
 		camera[0].prp = glm::vec3(tiger_pos.x, tiger_pos.y, tiger_pos.z+500.0f);		// 카메라 위치
 		camera[0].vrp = glm::vec3(tiger_pos.x, tiger_pos.y, tiger_pos.z);		// 바라보는 곳
@@ -1392,6 +1392,7 @@ void set_up_scene_lights(void) {
 	int i;
 	// point_light_EC: use light 0
 	light[0].light_on = 1;
+	/*
 	light[0].position[0] = 0.0f; light[0].position[1] = 10.0f; 	// point light position in EC
 	light[0].position[2] = 0.0f; light[0].position[3] = 1.0f;
 
@@ -1403,6 +1404,19 @@ void set_up_scene_lights(void) {
 
 	light[0].specular_color[0] = 0.9f; light[0].specular_color[1] = 0.9f;
 	light[0].specular_color[2] = 0.9f; light[0].specular_color[3] = 1.0f;
+
+	*/
+	light[0].position[0] = 212.778366f; light[0].position[1] = 163.684006f; 	// point light position in EC
+	light[0].position[2] = 11.367419f; light[0].position[3] = 1.0f;
+
+	light[0].ambient_color[0] = 0.1f; light[0].ambient_color[1] = 0.1f;
+	light[0].ambient_color[2] = 0.1f; light[0].ambient_color[3] = 1.0f;
+
+	light[0].diffuse_color[0] = 0.1f; light[0].diffuse_color[1] = 0.1f;
+	light[0].diffuse_color[2] = 0.1f; light[0].diffuse_color[3] = 1.0f;
+
+	light[0].specular_color[0] = 0.1f; light[0].specular_color[1] = 0.1f;
+	light[0].specular_color[2] = 0.1f; light[0].specular_color[3] = 1.0f;
 
 	// spot_light_WC: use light 1
 	light[1].light_on = 1;
