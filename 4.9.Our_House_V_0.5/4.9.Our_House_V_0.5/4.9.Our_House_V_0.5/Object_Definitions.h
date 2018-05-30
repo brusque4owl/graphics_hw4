@@ -10,10 +10,35 @@
 #define LOC_TEXCOORD 2
 // END OF FOR DRAW CAR
 
-typedef struct _material {
-	glm::vec4 emission, ambient, diffuse, specular;
-	GLfloat exponent;
-} Material;
+typedef struct _Light_Parameters {
+	int light_on;
+	float position[4];
+	float ambient_color[4], diffuse_color[4], specular_color[4];
+	float spot_direction[3];
+	float spot_exponent;
+	float spot_cutoff_angle;
+	float light_attenuation_factors[4]; // produce this effect only if .w != 0.0f
+} Light_Parameters;
+
+typedef struct _loc_LIGHT_Parameters {
+	GLint light_on;
+	GLint position;
+	GLint ambient_color, diffuse_color, specular_color;
+	GLint spot_direction;
+	GLint spot_exponent;
+	GLint spot_cutoff_angle;
+	GLint light_attenuation_factors;
+} loc_light_Parameters;
+
+typedef struct _Material_Parameters {
+	float ambient_color[4], diffuse_color[4], specular_color[4], emissive_color[4];
+	float specular_exponent;
+} Material_Parameters;
+
+typedef struct _loc_Material_Parameters {
+	GLint ambient_color, diffuse_color, specular_color, emissive_color;
+	GLint specular_exponent;
+} loc_Material_Parameters;
 
 #define N_MAX_GEOM_COPIES 6
 typedef struct _Object {
@@ -30,7 +55,7 @@ typedef struct _Object {
 
 	int n_geom_instances;
 	glm::mat4 ModelMatrix[N_MAX_GEOM_COPIES];
-	Material material[N_MAX_GEOM_COPIES];
+	Material_Parameters material[N_MAX_GEOM_COPIES];
 } Object;
 
 #define N_MAX_STATIC_OBJECTS		8
@@ -104,6 +129,27 @@ void prepare_geom_of_static_object(Object *obj_ptr) {
 	glBindVertexArray(0);
 }
 
+/*
+Material_Parameters material_building_0;
+Material_Parameters material_table_0;
+Material_Parameters material_table_1;
+Material_Parameters material_light_0;
+Material_Parameters material_light_1;
+Material_Parameters material_light_2;
+Material_Parameters material_light_3;
+Material_Parameters material_light_4;
+Material_Parameters material_light_5;
+Material_Parameters material_teapot_0;
+Material_Parameters material_teapot_1;
+Material_Parameters material_chair_0;
+Material_Parameters material_chair_1;
+Material_Parameters material_frame_0;
+Material_Parameters material_frame_1;
+Material_Parameters material_picture_0;
+Material_Parameters material_picture_1;
+Material_Parameters material_cow_0;
+*/
+
 void define_static_objects(void) {
 	// building
 	strcpy(static_objects[OBJ_BUILDING].filename, "Data/Building1_vnt.geom");
@@ -116,11 +162,23 @@ void define_static_objects(void) {
 
 	static_objects[OBJ_BUILDING].ModelMatrix[0] = glm::mat4(1.0f);
 
-	static_objects[OBJ_BUILDING].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_BUILDING].material[0].ambient = glm::vec4(0.135f, 0.2225f, 0.1575f, 1.0f);
-	static_objects[OBJ_BUILDING].material[0].diffuse = glm::vec4(0.54f, 0.89f, 0.63f, 1.0f);
-	static_objects[OBJ_BUILDING].material[0].specular = glm::vec4(0.316228f, 0.316228f, 0.316228f, 1.0f);
-	static_objects[OBJ_BUILDING].material[0].exponent = 128.0f*0.1f;
+	static_objects[OBJ_BUILDING].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_BUILDING].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_BUILDING].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_BUILDING].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_BUILDING].material[0].ambient_color[0] = 0.135f;
+	static_objects[OBJ_BUILDING].material[0].ambient_color[1] = 0.2225f;
+	static_objects[OBJ_BUILDING].material[0].ambient_color[2] = 0.1575f;
+	static_objects[OBJ_BUILDING].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_BUILDING].material[0].diffuse_color[0] = 0.54f;
+	static_objects[OBJ_BUILDING].material[0].diffuse_color[1] = 0.89f;
+	static_objects[OBJ_BUILDING].material[0].diffuse_color[2] = 0.63f;
+	static_objects[OBJ_BUILDING].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_BUILDING].material[0].specular_color[0] = 0.316228f;
+	static_objects[OBJ_BUILDING].material[0].specular_color[1] = 0.316228f;
+	static_objects[OBJ_BUILDING].material[0].specular_color[2] = 0.316228f;
+	static_objects[OBJ_BUILDING].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_BUILDING].material[0].specular_exponent = 128.0f*0.1f;
 
 	// table
 	strcpy(static_objects[OBJ_TABLE].filename, "Data/Table_vn.geom");
@@ -135,21 +193,45 @@ void define_static_objects(void) {
 	static_objects[OBJ_TABLE].ModelMatrix[0] = glm::scale(static_objects[OBJ_TABLE].ModelMatrix[0],
 		glm::vec3(0.8f, 0.6f, 0.6f));
 
-	static_objects[OBJ_TABLE].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_TABLE].material[0].ambient = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-	static_objects[OBJ_TABLE].material[0].diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-	static_objects[OBJ_TABLE].material[0].specular = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	static_objects[OBJ_TABLE].material[0].exponent = 128.0f*0.078125f;
+	static_objects[OBJ_TABLE].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_TABLE].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_TABLE].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_TABLE].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[0].ambient_color[0] = 0.05f;
+	static_objects[OBJ_TABLE].material[0].ambient_color[1] = 0.05f;
+	static_objects[OBJ_TABLE].material[0].ambient_color[2] = 0.05f;
+	static_objects[OBJ_TABLE].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[0].diffuse_color[0] = 0.7f;
+	static_objects[OBJ_TABLE].material[0].diffuse_color[1] = 0.7f;
+	static_objects[OBJ_TABLE].material[0].diffuse_color[2] = 0.7f;
+	static_objects[OBJ_TABLE].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[0].specular_color[0] = 0.5f;
+	static_objects[OBJ_TABLE].material[0].specular_color[1] = 0.5f;
+	static_objects[OBJ_TABLE].material[0].specular_color[2] = 0.5f;
+	static_objects[OBJ_TABLE].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[0].specular_exponent = 128.0f*0.078125f;
 
 	static_objects[OBJ_TABLE].ModelMatrix[1] = glm::translate(glm::mat4(1.0f), glm::vec3(157.0f, 76.5f, 0.0f));
 	static_objects[OBJ_TABLE].ModelMatrix[1] = glm::scale(static_objects[OBJ_TABLE].ModelMatrix[1],
 		glm::vec3(0.5f, 0.5f, 0.5f));
 
-	static_objects[OBJ_TABLE].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_TABLE].material[1].ambient = glm::vec4(0.1f, 0.3f, 0.1f, 1.0f);
-	static_objects[OBJ_TABLE].material[1].diffuse = glm::vec4(0.4f, 0.6f, 0.3f, 1.0f);
-	static_objects[OBJ_TABLE].material[1].specular = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	static_objects[OBJ_TABLE].material[1].exponent = 15.0f;
+	static_objects[OBJ_TABLE].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_TABLE].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_TABLE].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_TABLE].material[1].emissive_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[1].ambient_color[0] = 0.1f;
+	static_objects[OBJ_TABLE].material[1].ambient_color[1] = 0.3f;
+	static_objects[OBJ_TABLE].material[1].ambient_color[2] = 0.1f;
+	static_objects[OBJ_TABLE].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[1].diffuse_color[0] = 0.4f;
+	static_objects[OBJ_TABLE].material[1].diffuse_color[1] = 0.6f;
+	static_objects[OBJ_TABLE].material[1].diffuse_color[2] = 0.3f;
+	static_objects[OBJ_TABLE].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[1].specular_color[0] = 0.5f;
+	static_objects[OBJ_TABLE].material[1].specular_color[1] = 0.5f;
+	static_objects[OBJ_TABLE].material[1].specular_color[2] = 0.5f;
+	static_objects[OBJ_TABLE].material[1].specular_color[3] = 1.0f;
+	static_objects[OBJ_TABLE].material[1].specular_exponent = 15.0f;
 
 	// Light
 	strcpy(static_objects[OBJ_LIGHT].filename, "Data/Light_vn.geom");
@@ -164,62 +246,134 @@ void define_static_objects(void) {
 	static_objects[OBJ_LIGHT].ModelMatrix[0] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[0],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[0].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[0].diffuse = glm::vec4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	static_objects[OBJ_LIGHT].material[0].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[0].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_LIGHT].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_LIGHT].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_LIGHT].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[0].ambient_color[0] = 0.24725f;
+	static_objects[OBJ_LIGHT].material[0].ambient_color[1] = 0.1995f;
+	static_objects[OBJ_LIGHT].material[0].ambient_color[2] = 0.0745f;
+	static_objects[OBJ_LIGHT].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[0].diffuse_color[0] = 0.75164f;
+	static_objects[OBJ_LIGHT].material[0].diffuse_color[1] = 0.60648f;
+	static_objects[OBJ_LIGHT].material[0].diffuse_color[2] = 0.22648f;
+	static_objects[OBJ_LIGHT].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[0].specular_color[0] = 0.628281f;
+	static_objects[OBJ_LIGHT].material[0].specular_color[1] = 0.555802f;
+	static_objects[OBJ_LIGHT].material[0].specular_color[2] = 0.366065f;
+	static_objects[OBJ_LIGHT].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[0].specular_exponent = 128.0f*0.4f;
 
 	static_objects[OBJ_LIGHT].ModelMatrix[1] = glm::translate(glm::mat4(1.0f), glm::vec3(80.0f, 47.5f, 49.0f));
 	static_objects[OBJ_LIGHT].ModelMatrix[1] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[1],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[1].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[1].diffuse = glm::vec4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	static_objects[OBJ_LIGHT].material[1].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[1].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_LIGHT].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_LIGHT].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_LIGHT].material[1].emissive_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[1].ambient_color[0] = 0.24725f;
+	static_objects[OBJ_LIGHT].material[1].ambient_color[1] = 0.1995f;
+	static_objects[OBJ_LIGHT].material[1].ambient_color[2] = 0.0745f;
+	static_objects[OBJ_LIGHT].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[1].diffuse_color[0] = 0.75164f;
+	static_objects[OBJ_LIGHT].material[1].diffuse_color[1] = 0.60648f;
+	static_objects[OBJ_LIGHT].material[1].diffuse_color[2] = 0.22648f;
+	static_objects[OBJ_LIGHT].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[1].specular_color[0] = 0.628281f;
+	static_objects[OBJ_LIGHT].material[1].specular_color[1] = 0.555802f;
+	static_objects[OBJ_LIGHT].material[1].specular_color[2] = 0.366065f;
+	static_objects[OBJ_LIGHT].material[1].specular_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[1].specular_exponent = 128.0f*0.4f;
 
 	static_objects[OBJ_LIGHT].ModelMatrix[2] = glm::translate(glm::mat4(1.0f), glm::vec3(40.0f, 130.0f, 49.0f));
 	static_objects[OBJ_LIGHT].ModelMatrix[2] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[2],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[2].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[2].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[2].diffuse = glm::vec4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	static_objects[OBJ_LIGHT].material[2].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[2].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[2].emissive_color[0] =  0.0f;
+	static_objects[OBJ_LIGHT].material[2].emissive_color[1] =  0.0f;
+	static_objects[OBJ_LIGHT].material[2].emissive_color[2] =  0.0f;
+	static_objects[OBJ_LIGHT].material[2].emissive_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[2].ambient_color[0] =  0.24725f;
+	static_objects[OBJ_LIGHT].material[2].ambient_color[1] =  0.1995f;
+	static_objects[OBJ_LIGHT].material[2].ambient_color[2] =  0.0745f;
+	static_objects[OBJ_LIGHT].material[2].ambient_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[2].diffuse_color[0] =  0.75164f;
+	static_objects[OBJ_LIGHT].material[2].diffuse_color[1] =  0.60648f;
+	static_objects[OBJ_LIGHT].material[2].diffuse_color[2] =  0.22648f;
+	static_objects[OBJ_LIGHT].material[2].diffuse_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[2].specular_color[0] =  0.628281f;
+	static_objects[OBJ_LIGHT].material[2].specular_color[1] =  0.555802f;
+	static_objects[OBJ_LIGHT].material[2].specular_color[2] =  0.366065f;
+	static_objects[OBJ_LIGHT].material[2].specular_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[2].specular_exponent = 128.0f*0.4f;
 
 	static_objects[OBJ_LIGHT].ModelMatrix[3] = glm::translate(glm::mat4(1.0f), glm::vec3(190.0f, 60.0f, 49.0f));
 	static_objects[OBJ_LIGHT].ModelMatrix[3] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[3],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[3].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[3].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[3].diffuse = glm::vec4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	static_objects[OBJ_LIGHT].material[3].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[3].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[3].emissive_color[0] =  0.0f;
+	static_objects[OBJ_LIGHT].material[3].emissive_color[1] =  0.0f;
+	static_objects[OBJ_LIGHT].material[3].emissive_color[2] =  0.0f;
+	static_objects[OBJ_LIGHT].material[3].emissive_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[3].ambient_color[0] =  0.24725f;
+	static_objects[OBJ_LIGHT].material[3].ambient_color[1] =  0.1995f;
+	static_objects[OBJ_LIGHT].material[3].ambient_color[2] =  0.0745f;
+	static_objects[OBJ_LIGHT].material[3].ambient_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[3].diffuse_color[0] =  0.75164f;
+	static_objects[OBJ_LIGHT].material[3].diffuse_color[1] =  0.60648f;
+	static_objects[OBJ_LIGHT].material[3].diffuse_color[2] =  0.22648f;
+	static_objects[OBJ_LIGHT].material[3].diffuse_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[3].specular_color[0] =  0.628281f;
+	static_objects[OBJ_LIGHT].material[3].specular_color[1] =  0.555802f;
+	static_objects[OBJ_LIGHT].material[3].specular_color[2] =  0.366065f;
+	static_objects[OBJ_LIGHT].material[3].specular_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[3].specular_exponent = 128.0f*0.4f;
 
 	static_objects[OBJ_LIGHT].ModelMatrix[4] = glm::translate(glm::mat4(1.0f), glm::vec3(210.0f, 112.5f, 49.0));
 	static_objects[OBJ_LIGHT].ModelMatrix[4] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[4],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[4].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[4].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[4].diffuse = glm::vec4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	static_objects[OBJ_LIGHT].material[4].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[4].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[4].emissive_color[0] =  0.0f;
+	static_objects[OBJ_LIGHT].material[4].emissive_color[1] =  0.0f;
+	static_objects[OBJ_LIGHT].material[4].emissive_color[2] =  0.0f;
+	static_objects[OBJ_LIGHT].material[4].emissive_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[4].ambient_color[0] =  0.24725f;
+	static_objects[OBJ_LIGHT].material[4].ambient_color[1] =  0.1995f;
+	static_objects[OBJ_LIGHT].material[4].ambient_color[2] =  0.0745f;
+	static_objects[OBJ_LIGHT].material[4].ambient_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[4].diffuse_color[0] =  0.75164f;
+	static_objects[OBJ_LIGHT].material[4].diffuse_color[1] =  0.60648f;
+	static_objects[OBJ_LIGHT].material[4].diffuse_color[2] =  0.22648f;
+	static_objects[OBJ_LIGHT].material[4].diffuse_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[4].specular_color[0] =  0.628281f;
+	static_objects[OBJ_LIGHT].material[4].specular_color[1] =  0.555802f;
+	static_objects[OBJ_LIGHT].material[4].specular_color[2] =  0.366065f;
+	static_objects[OBJ_LIGHT].material[4].specular_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[4].specular_exponent = 128.0f*0.4f;
 
 	// Added OBJ_LIGHT NO.5 - HK
 	static_objects[OBJ_LIGHT].ModelMatrix[5] = glm::translate(glm::mat4(1.0f), glm::vec3(80.0f, 100.0f, 49.0f));
 	static_objects[OBJ_LIGHT].ModelMatrix[5] = glm::rotate(static_objects[OBJ_LIGHT].ModelMatrix[5],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_LIGHT].material[5].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_LIGHT].material[5].ambient = glm::vec4(0.24725f, 0.1995f, 0.0745f, 1.0f);
-	static_objects[OBJ_LIGHT].material[5].diffuse = glm::vec4(0.12f, 0.34f, 0.56f, 1.0f);
-	static_objects[OBJ_LIGHT].material[5].specular = glm::vec4(0.628281f, 0.555802f, 0.366065f, 1.0f);
-	static_objects[OBJ_LIGHT].material[5].exponent = 128.0f*0.4f;
+	static_objects[OBJ_LIGHT].material[5].emissive_color[0] = 0.0f;
+	static_objects[OBJ_LIGHT].material[5].emissive_color[1] = 0.0f;
+	static_objects[OBJ_LIGHT].material[5].emissive_color[2] = 0.0f;
+	static_objects[OBJ_LIGHT].material[5].emissive_color[3] = 1.0f;
+	static_objects[OBJ_LIGHT].material[5].ambient_color[0] =  0.24725f;
+	static_objects[OBJ_LIGHT].material[5].ambient_color[1] =  0.1995f;
+	static_objects[OBJ_LIGHT].material[5].ambient_color[2] =  0.0745f;
+	static_objects[OBJ_LIGHT].material[5].ambient_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[5].diffuse_color[0] =  0.12f;
+	static_objects[OBJ_LIGHT].material[5].diffuse_color[1] =  0.34f;
+	static_objects[OBJ_LIGHT].material[5].diffuse_color[2] =  0.56f;
+	static_objects[OBJ_LIGHT].material[5].diffuse_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[5].specular_color[0] =  0.628281f;
+	static_objects[OBJ_LIGHT].material[5].specular_color[1] =  0.555802f;
+	static_objects[OBJ_LIGHT].material[5].specular_color[2] =  0.366065f;
+	static_objects[OBJ_LIGHT].material[5].specular_color[3] =  1.0f;
+	static_objects[OBJ_LIGHT].material[5].specular_exponent = 128.0f*0.4f;
 
 	// teapot
 	strcpy(static_objects[OBJ_TEAPOT].filename, "Data/Teapotn_vn.geom");
@@ -234,11 +388,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_TEAPOT].ModelMatrix[0] = glm::scale(static_objects[OBJ_TEAPOT].ModelMatrix[0],
 		glm::vec3(2.0f, 2.0f, 2.0f));
 
-	static_objects[OBJ_TEAPOT].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[0].ambient = glm::vec4(0.1745f, 0.01175f, 0.01175f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[0].diffuse = glm::vec4(0.61424f, 0.04136f, 0.04136f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[0].specular = glm::vec4(0.727811f, 0.626959f, 0.626959f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[0].exponent = 128.0f*0.6;
+	static_objects[OBJ_TEAPOT].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[0].emissive_color[3] =  1.0f;
+	static_objects[OBJ_TEAPOT].material[0].ambient_color[0] = 0.1745f;
+	static_objects[OBJ_TEAPOT].material[0].ambient_color[1] = 0.01175f;
+	static_objects[OBJ_TEAPOT].material[0].ambient_color[2] = 0.01175f;
+	static_objects[OBJ_TEAPOT].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_TEAPOT].material[0].diffuse_color[0] = 0.61424f;
+	static_objects[OBJ_TEAPOT].material[0].diffuse_color[1] = 0.04136f;
+	static_objects[OBJ_TEAPOT].material[0].diffuse_color[2] = 0.04136f;
+	static_objects[OBJ_TEAPOT].material[0].diffuse_color[3] =  1.0f;
+	static_objects[OBJ_TEAPOT].material[0].specular_color[0] = 0.727811f;
+	static_objects[OBJ_TEAPOT].material[0].specular_color[1] = 0.626959f;
+	static_objects[OBJ_TEAPOT].material[0].specular_color[2] = 0.626959f;
+	static_objects[OBJ_TEAPOT].material[0].specular_color[3] =  1.0f;
+	static_objects[OBJ_TEAPOT].material[0].specular_exponent = 128.0f*0.6;
 
 	// Added OBJ_TEAPOT NO.1 - HK
 	//vec3(157.0f, 76.5f, 0.0f) - OBJ_TABLE NO.1
@@ -246,11 +412,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_TEAPOT].ModelMatrix[1] = glm::scale(static_objects[OBJ_TEAPOT].ModelMatrix[1],
 		glm::vec3(2.0f, 2.0f, 2.0f));
 
-	static_objects[OBJ_TEAPOT].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[1].ambient = glm::vec4(0.1745f, 0.01175f, 0.01175f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[1].diffuse = glm::vec4(0.34f, 0.12f, 0.56f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[1].specular = glm::vec4(0.727811f, 0.626959f, 0.626959f, 1.0f);
-	static_objects[OBJ_TEAPOT].material[1].exponent = 128.0f*0.6;
+	static_objects[OBJ_TEAPOT].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_TEAPOT].material[1].emissive_color[3] = 1.0f;
+	static_objects[OBJ_TEAPOT].material[1].ambient_color[0] = 0.1745f;
+	static_objects[OBJ_TEAPOT].material[1].ambient_color[1] = 0.01175f;
+	static_objects[OBJ_TEAPOT].material[1].ambient_color[2] = 0.01175f;
+	static_objects[OBJ_TEAPOT].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_TEAPOT].material[1].diffuse_color[0] = 0.34f;
+	static_objects[OBJ_TEAPOT].material[1].diffuse_color[1] = 0.12f;
+	static_objects[OBJ_TEAPOT].material[1].diffuse_color[2] = 0.56f;
+	static_objects[OBJ_TEAPOT].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_TEAPOT].material[1].specular_color[0] = 0.727811f;
+	static_objects[OBJ_TEAPOT].material[1].specular_color[1] = 0.626959f;
+	static_objects[OBJ_TEAPOT].material[1].specular_color[2] = 0.626959f;
+	static_objects[OBJ_TEAPOT].material[1].specular_color[3] =  1.0f;
+	static_objects[OBJ_TEAPOT].material[1].specular_exponent = 128.0f*0.6;
 
 	// new_chair
 	strcpy(static_objects[OBJ_NEW_CHAIR].filename, "Data/new_chair_vnt.geom");
@@ -267,11 +445,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_NEW_CHAIR].ModelMatrix[0] = glm::rotate(static_objects[OBJ_NEW_CHAIR].ModelMatrix[0],
 		180.0f*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	static_objects[OBJ_NEW_CHAIR].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[0].ambient = glm::vec4(0.05f, 0.05f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[0].diffuse = glm::vec4(0.5f, 0.5f, 0.4f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[0].specular = glm::vec4(0.7f, 0.7f, 0.04f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[0].exponent = 128.0f*0.078125f;
+	static_objects[OBJ_NEW_CHAIR].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].ambient_color[0] = 0.05f;
+	static_objects[OBJ_NEW_CHAIR].material[0].ambient_color[1] = 0.05f;
+	static_objects[OBJ_NEW_CHAIR].material[0].ambient_color[2] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color[0] = 0.5f;
+	static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color[1] = 0.5f;
+	static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color[2] = 0.4f;
+	static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].specular_color[0] = 0.7f;
+	static_objects[OBJ_NEW_CHAIR].material[0].specular_color[1] = 0.7f;
+	static_objects[OBJ_NEW_CHAIR].material[0].specular_color[2] = 0.04f;
+	static_objects[OBJ_NEW_CHAIR].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[0].specular_exponent = 128.0f*0.078125f;
 
 	// Added OBJ_NEW_CHAIR NO.1 - HK
 	static_objects[OBJ_NEW_CHAIR].ModelMatrix[1] = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 52.0f, 0.0f));
@@ -280,11 +470,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_NEW_CHAIR].ModelMatrix[1] = glm::rotate(static_objects[OBJ_NEW_CHAIR].ModelMatrix[1],
 		90.0f*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	static_objects[OBJ_NEW_CHAIR].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[1].ambient = glm::vec4(0.05f, 0.05f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[1].diffuse = glm::vec4(0.12f, 0.34f, 0.56f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[1].specular = glm::vec4(0.7f, 0.7f, 0.04f, 1.0f);
-	static_objects[OBJ_NEW_CHAIR].material[1].exponent = 128.0f*0.078125f;
+	static_objects[OBJ_NEW_CHAIR].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].emissive_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].ambient_color[0] = 0.05f;
+	static_objects[OBJ_NEW_CHAIR].material[1].ambient_color[1] = 0.05f;
+	static_objects[OBJ_NEW_CHAIR].material[1].ambient_color[2] = 0.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color[0] = 0.12f;
+	static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color[1] = 0.34f;
+	static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color[2] = 0.56f;
+	static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].specular_color[0] = 0.7f;
+	static_objects[OBJ_NEW_CHAIR].material[1].specular_color[1] = 0.7f;
+	static_objects[OBJ_NEW_CHAIR].material[1].specular_color[2] = 0.04f;
+	static_objects[OBJ_NEW_CHAIR].material[1].specular_color[3] = 1.0f;
+	static_objects[OBJ_NEW_CHAIR].material[1].specular_exponent = 128.0f*0.078125f;
 
 	// frame
 	strcpy(static_objects[OBJ_FRAME].filename, "Data/Frame_vn.geom");
@@ -301,11 +503,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_FRAME].ModelMatrix[0] = glm::rotate(static_objects[OBJ_FRAME].ModelMatrix[0],
 		90.0f*TO_RADIAN, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	static_objects[OBJ_FRAME].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_FRAME].material[0].ambient = glm::vec4(0.19125f, 0.0735f, 0.0225f, 1.0f);
-	static_objects[OBJ_FRAME].material[0].diffuse = glm::vec4(0.7038f, 0.27048f, 0.0828f, 1.0f);
-	static_objects[OBJ_FRAME].material[0].specular = glm::vec4(0.256777f, 0.137622f, 0.086014f, 1.0f);
-	static_objects[OBJ_FRAME].material[0].exponent = 128.0f*0.1f;
+	static_objects[OBJ_FRAME].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_FRAME].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_FRAME].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_FRAME].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[0].ambient_color[0] = 0.19125f;
+	static_objects[OBJ_FRAME].material[0].ambient_color[1] = 0.0735f;
+	static_objects[OBJ_FRAME].material[0].ambient_color[2] = 0.0225f;
+	static_objects[OBJ_FRAME].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[0].diffuse_color[0] = 0.7038f;
+	static_objects[OBJ_FRAME].material[0].diffuse_color[1] = 0.27048f;
+	static_objects[OBJ_FRAME].material[0].diffuse_color[2] = 0.0828f;
+	static_objects[OBJ_FRAME].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[0].specular_color[0] = 0.256777f;
+	static_objects[OBJ_FRAME].material[0].specular_color[1] = 0.137622f;
+	static_objects[OBJ_FRAME].material[0].specular_color[2] = 0.086014f;
+	static_objects[OBJ_FRAME].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[0].specular_exponent = 128.0f*0.1f;
 
 	// Added OBJ_FRAME NO.1 - HK
 	static_objects[OBJ_FRAME].ModelMatrix[1] = glm::translate(glm::mat4(1.0f), glm::vec3(25.0f, 20.0f, 30.0f));
@@ -316,11 +530,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_FRAME].ModelMatrix[1] = glm::rotate(static_objects[OBJ_FRAME].ModelMatrix[1],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_FRAME].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_FRAME].material[1].ambient = glm::vec4(0.19125f, 0.0735f, 0.0225f, 1.0f);
-	static_objects[OBJ_FRAME].material[1].diffuse = glm::vec4(0.56f, 0.12f, 0.34f, 1.0f);
-	static_objects[OBJ_FRAME].material[1].specular = glm::vec4(0.256777f, 0.137622f, 0.086014f, 1.0f);
-	static_objects[OBJ_FRAME].material[1].exponent = 128.0f*0.1f;
+	static_objects[OBJ_FRAME].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_FRAME].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_FRAME].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_FRAME].material[1].emissive_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[1].ambient_color[0] = 0.19125f;
+	static_objects[OBJ_FRAME].material[1].ambient_color[1] = 0.0735f;
+	static_objects[OBJ_FRAME].material[1].ambient_color[2] = 0.0225f;
+	static_objects[OBJ_FRAME].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[1].diffuse_color[0] = 0.56f;
+	static_objects[OBJ_FRAME].material[1].diffuse_color[1] = 0.12f;
+	static_objects[OBJ_FRAME].material[1].diffuse_color[2] = 0.34f;
+	static_objects[OBJ_FRAME].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[1].specular_color[0] = 0.256777f;
+	static_objects[OBJ_FRAME].material[1].specular_color[1] = 0.137622f;
+	static_objects[OBJ_FRAME].material[1].specular_color[2] = 0.086014f;
+	static_objects[OBJ_FRAME].material[1].specular_color[3] = 1.0f;
+	static_objects[OBJ_FRAME].material[1].specular_exponent = 128.0f*0.1f;
 
 	// new_picture
 	strcpy(static_objects[OBJ_NEW_PICTURE].filename, "Data/new_picture_vnt.geom");
@@ -337,11 +563,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_NEW_PICTURE].ModelMatrix[0] = glm::rotate(static_objects[OBJ_NEW_PICTURE].ModelMatrix[0],
 		90.0f*TO_RADIAN, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	static_objects[OBJ_NEW_PICTURE].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[0].ambient = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[0].diffuse = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[0].specular = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[0].exponent = 128.0f*0.6f;
+	static_objects[OBJ_NEW_PICTURE].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].ambient_color[0] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[0].ambient_color[1] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[0].ambient_color[2] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color[0] = 0.4f;
+	static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color[1] = 0.4f;
+	static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color[2] = 0.4f;
+	static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].specular_color[0] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[0].specular_color[1] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[0].specular_color[2] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[0].specular_exponent = 128.0f*0.6f;
 
 	// Added OBJ_NEW_PICTURE NO.1 - HK
 	// OBJ_FRAME 1 - (25.0f, 15.0f, 30.0f)
@@ -353,11 +591,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_NEW_PICTURE].ModelMatrix[1] = glm::rotate(static_objects[OBJ_NEW_PICTURE].ModelMatrix[1],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_NEW_PICTURE].material[1].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[1].ambient = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[1].diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[1].specular = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
-	static_objects[OBJ_NEW_PICTURE].material[1].exponent = 128.0f*0.6f;
+	static_objects[OBJ_NEW_PICTURE].material[1].emissive_color[0] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].emissive_color[1] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].emissive_color[2] = 0.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].emissive_color[3] =  1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].ambient_color[0] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[1].ambient_color[1] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[1].ambient_color[2] = 0.25f;
+	static_objects[OBJ_NEW_PICTURE].material[1].ambient_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color[0] = 0.8f;
+	static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color[1] = 0.8f;
+	static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color[2] = 0.8f;
+	static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].specular_color[0] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[1].specular_color[1] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[1].specular_color[2] = 0.774597f;
+	static_objects[OBJ_NEW_PICTURE].material[1].specular_color[3] = 1.0f;
+	static_objects[OBJ_NEW_PICTURE].material[1].specular_exponent = 128.0f*0.6f;
 
 	// COW
 	strcpy(static_objects[OBJ_COW].filename, "Data/cow_vn.geom");
@@ -376,11 +626,23 @@ void define_static_objects(void) {
 	static_objects[OBJ_COW].ModelMatrix[0] = glm::rotate(static_objects[OBJ_COW].ModelMatrix[0],
 		90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	static_objects[OBJ_COW].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static_objects[OBJ_COW].material[0].ambient = glm::vec4(0.329412f, 0.223529f, 0.027451f, 1.0f);
-	static_objects[OBJ_COW].material[0].diffuse = glm::vec4(0.780392f, 0.568627f, 0.113725f, 1.0f);
-	static_objects[OBJ_COW].material[0].specular = glm::vec4(0.992157f, 0.941176f, 0.807843f, 1.0f);
-	static_objects[OBJ_COW].material[0].exponent = 0.21794872f*0.6f;
+	static_objects[OBJ_COW].material[0].emissive_color[0] = 0.0f;
+	static_objects[OBJ_COW].material[0].emissive_color[1] = 0.0f;
+	static_objects[OBJ_COW].material[0].emissive_color[2] = 0.0f;
+	static_objects[OBJ_COW].material[0].emissive_color[3] = 1.0f;
+	static_objects[OBJ_COW].material[0].ambient_color[0] = 0.329412f;
+	static_objects[OBJ_COW].material[0].ambient_color[1] = 0.223529f;
+	static_objects[OBJ_COW].material[0].ambient_color[2] = 0.027451f;
+	static_objects[OBJ_COW].material[0].ambient_color[3] = 1.0f;
+	static_objects[OBJ_COW].material[0].diffuse_color[0] = 0.780392f;
+	static_objects[OBJ_COW].material[0].diffuse_color[1] = 0.568627f;
+	static_objects[OBJ_COW].material[0].diffuse_color[2] = 0.113725f;
+	static_objects[OBJ_COW].material[0].diffuse_color[3] = 1.0f;
+	static_objects[OBJ_COW].material[0].specular_color[0] = 0.992157f;
+	static_objects[OBJ_COW].material[0].specular_color[1] = 0.941176f;
+	static_objects[OBJ_COW].material[0].specular_color[2] = 0.807843f;
+	static_objects[OBJ_COW].material[0].specular_color[3] = 1.0f;
+	static_objects[OBJ_COW].material[0].specular_exponent = 0.21794872f*0.6f;
 
 	n_static_objects = 8;
 }
@@ -392,8 +654,8 @@ void draw_static_object(Object *obj_ptr, int instance_ID, int cam_index) {
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
-	glUniform3f(loc_primitive_color, obj_ptr->material[instance_ID].diffuse.r,
-		obj_ptr->material[instance_ID].diffuse.g, obj_ptr->material[instance_ID].diffuse.b);		// rgb coloring
+	glUniform3f(loc_primitive_color, obj_ptr->material[instance_ID].diffuse_color[0],
+		obj_ptr->material[instance_ID].diffuse_color[1], obj_ptr->material[instance_ID].diffuse_color[2]);		// rgb coloring
 	glBindVertexArray(obj_ptr->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * obj_ptr->n_triangles);
 	glBindVertexArray(0);
@@ -578,11 +840,23 @@ void define_animated_tiger(void) {
 
 		tiger[i].ModelMatrix[0] = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
-		tiger[i].material[0].emission = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		tiger[i].material[0].ambient = glm::vec4(0.329412f, 0.223529f, 0.027451f, 1.0f);
-		tiger[i].material[0].diffuse = glm::vec4(0.780392f, 0.568627f, 0.113725f, 1.0f);
-		tiger[i].material[0].specular = glm::vec4(0.992157f, 0.941176f, 0.807843f, 1.0f);
-		tiger[i].material[0].exponent = 128.0f*0.21794872f;
+		tiger[i].material[0].emissive_color[0] = 0.0f;
+		tiger[i].material[0].emissive_color[1] = 0.0f;
+		tiger[i].material[0].emissive_color[2] = 0.0f;
+		tiger[i].material[0].emissive_color[3] = 1.0f;
+		tiger[i].material[0].ambient_color[0] = 0.329412f;
+		tiger[i].material[0].ambient_color[1] = 0.223529f;
+		tiger[i].material[0].ambient_color[2] = 0.027451f;
+		tiger[i].material[0].ambient_color[3] = 1.0f;
+		tiger[i].material[0].diffuse_color[0] = 0.780392f;
+		tiger[i].material[0].diffuse_color[1] = 0.568627f;
+		tiger[i].material[0].diffuse_color[2] = 0.113725f;
+		tiger[i].material[0].diffuse_color[3] = 1.0f;
+		tiger[i].material[0].specular_color[0] = 0.992157f;
+		tiger[i].material[0].specular_color[1] = 0.941176f;
+		tiger[i].material[0].specular_color[2] = 0.807843f;
+		tiger[i].material[0].specular_color[3] = 1.0f;
+		tiger[i].material[0].specular_exponent = 128.0f*0.21794872f;
 	}
 }
 
@@ -651,8 +925,8 @@ void draw_animated_tiger(int cam_index) {
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
-	glUniform3f(loc_primitive_color, tiger[tiger_data.cur_frame].material[0].diffuse.r,
-		tiger[tiger_data.cur_frame].material[0].diffuse.g, tiger[tiger_data.cur_frame].material[0].diffuse.b);
+	glUniform3f(loc_primitive_color, tiger[tiger_data.cur_frame].material[0].diffuse_color[0],
+		tiger[tiger_data.cur_frame].material[0].diffuse_color[1], tiger[tiger_data.cur_frame].material[0].diffuse_color[2]);
 
 	glBindVertexArray(tiger[tiger_data.cur_frame].VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * tiger[tiger_data.cur_frame].n_triangles);
