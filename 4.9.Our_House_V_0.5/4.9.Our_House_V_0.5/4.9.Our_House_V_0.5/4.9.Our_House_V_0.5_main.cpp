@@ -1406,8 +1406,8 @@ void set_up_scene_lights(void) {
 	light[0].specular_color[2] = 0.9f; light[0].specular_color[3] = 1.0f;
 
 	*/
-	light[0].position[0] = 212.778366f; light[0].position[1] = 163.684006f; 	// point light position in EC
-	light[0].position[2] = 11.367419f; light[0].position[3] = 1.0f;
+	light[0].position[0] = 50.0f; light[0].position[1] = 50.0f; 	// point light position in EC
+	light[0].position[2] = 50.0f; light[0].position[3] = 1.0f;
 
 	light[0].ambient_color[0] = 0.1f; light[0].ambient_color[1] = 0.1f;
 	light[0].ambient_color[2] = 0.1f; light[0].ambient_color[3] = 1.0f;
@@ -1420,8 +1420,8 @@ void set_up_scene_lights(void) {
 
 	// spot_light_WC: use light 1
 	light[1].light_on = 1;
-	light[1].position[0] = -200.0f; light[1].position[1] = 500.0f; // spot light position in WC
-	light[1].position[2] = -200.0f; light[1].position[3] = 1.0f;
+	light[1].position[0] = 50.0f; light[1].position[1] = 50.0f; // spot light position in WC
+	light[1].position[2] = 50.0f; light[1].position[3] = 1.0f;
 
 	light[1].ambient_color[0] = 0.2f; light[1].ambient_color[1] = 0.2f;
 	light[1].ambient_color[2] = 0.2f; light[1].ambient_color[3] = 1.0f;
@@ -1434,7 +1434,7 @@ void set_up_scene_lights(void) {
 
 	light[1].spot_direction[0] = 0.0f; light[1].spot_direction[1] = -1.0f; // spot light direction in WC
 	light[1].spot_direction[2] = 0.0f;
-	light[1].spot_cutoff_angle = 20.0f;
+	light[1].spot_cutoff_angle = 70.0f;
 	light[1].spot_exponent = 27.0f;
 
 	glUseProgram(h_ShaderProgram_PS);
