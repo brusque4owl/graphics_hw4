@@ -1121,6 +1121,8 @@ int read_geometry_file(GLfloat **object, char *filename, GEOM_OBJ_TYPE geom_obj_
 	return n_triangles;
 }
 
+Material_Parameters material_car_body, material_car_wheel, material_car_nut;
+
 void prepare_geom_obj(int geom_obj_ID, char *filename, GEOM_OBJ_TYPE geom_obj_type) {
 	int n_bytes_per_vertex;
 
@@ -1136,10 +1138,8 @@ void prepare_geom_obj(int geom_obj_ID, char *filename, GEOM_OBJ_TYPE geom_obj_ty
 		geom_obj_vertices[geom_obj_ID], GL_STATIC_DRAW);
 	glVertexAttribPointer(LOC_VERTEX, 3, GL_FLOAT, GL_FALSE, n_bytes_per_vertex, BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(0);
-	if (geom_obj_type >= GEOM_OBJ_TYPE_VN) {
-		glVertexAttribPointer(LOC_NORMAL, 3, GL_FLOAT, GL_FALSE, n_bytes_per_vertex, BUFFER_OFFSET(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-	}
+	glVertexAttribPointer(LOC_NORMAL, 3, GL_FLOAT, GL_FALSE, n_bytes_per_vertex, BUFFER_OFFSET(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 	if (geom_obj_type >= GEOM_OBJ_TYPE_VNT) {
 		glVertexAttribPointer(LOC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, n_bytes_per_vertex, BUFFER_OFFSET(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
@@ -1147,7 +1147,101 @@ void prepare_geom_obj(int geom_obj_ID, char *filename, GEOM_OBJ_TYPE geom_obj_ty
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	if(geom_obj_ID== GEOM_OBJ_ID_CAR_BODY){
+		material_car_body.ambient_color[0] = 0.0f;
+		material_car_body.ambient_color[1] = 0.05f;
+		material_car_body.ambient_color[2] = 0.0f;
+		material_car_body.ambient_color[3] = 1.0f;
+
+		material_car_body.diffuse_color[0] = 0.4f;
+		material_car_body.diffuse_color[1] = 0.5f;
+		material_car_body.diffuse_color[2] = 0.4f;
+		material_car_body.diffuse_color[3] = 1.0f;
+
+		material_car_body.specular_color[0] = 0.04f;
+		material_car_body.specular_color[1] = 0.7f;
+		material_car_body.specular_color[2] = 0.04f;
+		material_car_body.specular_color[3] = 1.0f;
+
+		material_car_body.specular_exponent = 2.5f;
+
+		material_car_body.emissive_color[0] = 0.0f;
+		material_car_body.emissive_color[1] = 0.0f;
+		material_car_body.emissive_color[2] = 0.0f;
+		material_car_body.emissive_color[3] = 1.0f;
+	}
+	else if(GEOM_OBJ_ID_CAR_WHEEL){
+		material_car_wheel.ambient_color[0] = 0.0f;
+		material_car_wheel.ambient_color[1] = 0.05f;
+		material_car_wheel.ambient_color[2] = 0.0f;
+		material_car_wheel.ambient_color[3] = 1.0f;
+
+		material_car_wheel.diffuse_color[0] = 0.4f;
+		material_car_wheel.diffuse_color[1] = 0.5f;
+		material_car_wheel.diffuse_color[2] = 0.4f;
+		material_car_wheel.diffuse_color[3] = 1.0f;
+
+		material_car_wheel.specular_color[0] = 0.04f;
+		material_car_wheel.specular_color[1] = 0.7f;
+		material_car_wheel.specular_color[2] = 0.04f;
+		material_car_wheel.specular_color[3] = 1.0f;
+
+		material_car_wheel.specular_exponent = 2.5f;
+
+		material_car_wheel.emissive_color[0] = 0.0f;
+		material_car_wheel.emissive_color[1] = 0.0f;
+		material_car_wheel.emissive_color[2] = 0.0f;
+		material_car_wheel.emissive_color[3] = 1.0f;
+	}
+	else if(GEOM_OBJ_ID_CAR_NUT){
+		material_car_nut.ambient_color[0] = 0.0f;
+		material_car_nut.ambient_color[1] = 0.05f;
+		material_car_nut.ambient_color[2] = 0.0f;
+		material_car_nut.ambient_color[3] = 1.0f;
+
+		material_car_nut.diffuse_color[0] = 0.4f;
+		material_car_nut.diffuse_color[1] = 0.5f;
+		material_car_nut.diffuse_color[2] = 0.4f;
+		material_car_nut.diffuse_color[3] = 1.0f;
+
+		material_car_nut.specular_color[0] = 0.04f;
+		material_car_nut.specular_color[1] = 0.7f;
+		material_car_nut.specular_color[2] = 0.04f;
+		material_car_nut.specular_color[3] = 1.0f;
+
+		material_car_nut.specular_exponent = 2.5f;
+
+		material_car_nut.emissive_color[0] = 0.0f;
+		material_car_nut.emissive_color[1] = 0.0f;
+		material_car_nut.emissive_color[2] = 0.0f;
+		material_car_nut.emissive_color[3] = 1.0f;
+	}
 	free(geom_obj_vertices[geom_obj_ID]);
+}
+
+void set_material_car_body(void) {
+	// assume ShaderProgram_PS is used
+	glUniform4fv(loc_material.ambient_color, 1, material_car_body.ambient_color);
+	glUniform4fv(loc_material.diffuse_color, 1, material_car_body.diffuse_color);
+	glUniform4fv(loc_material.specular_color, 1, material_car_body.specular_color);
+	glUniform1f(loc_material.specular_exponent, material_car_body.specular_exponent);
+	glUniform4fv(loc_material.emissive_color, 1, material_car_body.emissive_color);
+}
+void set_material_car_wheel(void) {
+	// assume ShaderProgram_PS is used
+	glUniform4fv(loc_material.ambient_color, 1, material_car_wheel.ambient_color);
+	glUniform4fv(loc_material.diffuse_color, 1, material_car_wheel.diffuse_color);
+	glUniform4fv(loc_material.specular_color, 1, material_car_wheel.specular_color);
+	glUniform1f(loc_material.specular_exponent, material_car_wheel.specular_exponent);
+	glUniform4fv(loc_material.emissive_color, 1, material_car_wheel.emissive_color);
+}
+void set_material_car_nut(void) {
+	// assume ShaderProgram_PS is used
+	glUniform4fv(loc_material.ambient_color, 1, material_car_nut.ambient_color);
+	glUniform4fv(loc_material.diffuse_color, 1, material_car_nut.diffuse_color);
+	glUniform4fv(loc_material.specular_color, 1, material_car_nut.specular_color);
+	glUniform1f(loc_material.specular_exponent, material_car_nut.specular_exponent);
+	glUniform4fv(loc_material.emissive_color, 1, material_car_nut.emissive_color);
 }
 
 void draw_geom_obj(int geom_obj_ID) {
@@ -1168,7 +1262,7 @@ typedef struct __car_position{
 	float dist;	// 이동거리
 	float wheel_rot; // 바퀴 전후 회전각
 }CAR_POS;
-CAR_POS car_pos = {50.0f, 140.0f, 4.5f, 0.0f, 0.0f};
+CAR_POS car_pos = {50.0f, 140.0f, 5.5f, 0.0f, 0.0f};
 #define NUM_CAR_POINTS 5
 typedef struct {
 	float x, y;	
@@ -1190,23 +1284,32 @@ CAR_POINT car_point[NUM_CAR_POINTS] = {
 void draw_wheel_and_nut(int cam_index) {
 	// angle is used in Hierarchical_Car_Correct later
 	int i;
-
+	set_material_car_wheel();
 	glUniform3f(loc_primitive_color, 0.000f, 0.808f, 0.820f); // color name: DarkTurquoise
+	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_geom_obj(GEOM_OBJ_ID_CAR_WHEEL); // draw wheel
 
 	for (i = 0; i < 5; i++) {
+		set_material_car_nut();
 		ModelMatrix_CAR_NUT = glm::rotate(ModelMatrix_CAR_WHEEL, TO_RADIAN*72.0f*i, glm::vec3(0.0f, 0.0f, 1.0f));
 		ModelMatrix_CAR_NUT = glm::translate(ModelMatrix_CAR_NUT, glm::vec3(rad - 0.5f, 0.0f, ww));
 		ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_NUT;
 		glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
 		glUniform3f(loc_primitive_color, 0.690f, 0.769f, 0.871f); // color name: LightSteelBlue
+		glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+		glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+		glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 		draw_geom_obj(GEOM_OBJ_ID_CAR_NUT); // draw i-th nut
 	}
 }
 
 void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	//ModelMatrix_CAR_BODY = glm::rotate(glm::mat4(1.0f), -rotation_angle_car, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUseProgram(h_ShaderProgram_PS);
+	set_material_car_body();
 	ModelMatrix_CAR_BODY = glm::translate(glm::mat4(1.0f), glm::vec3(car_pos.x, car_pos.y, car_pos.z));
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, car_pos.rot*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));  // z축 기준으로 좌우회전가능
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, 90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -1216,6 +1319,9 @@ void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
 	glUniform3f(loc_primitive_color, 0.498f, 1.000f, 0.831f); // color name: Aquamarine
+	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_geom_obj(GEOM_OBJ_ID_CAR_BODY); // draw body
 
 	/*
@@ -1257,6 +1363,8 @@ void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_WHEEL;
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	draw_wheel_and_nut(cam_index);  // draw wheel 3
+	glUseProgram(0);
+
 }
 // END OF DRAW CAR OBJECTS
 

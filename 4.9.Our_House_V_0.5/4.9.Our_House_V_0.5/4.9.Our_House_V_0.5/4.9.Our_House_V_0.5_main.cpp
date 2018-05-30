@@ -89,7 +89,10 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 		draw_main_camera_axes(cam_index);
 		draw_frustum_line(cam_index);
 	}
+	// draw_car_dummy us h_ShaderProgram_PS
 	draw_car_dummy(cam_index);
+
+	glUseProgram(h_ShaderProgram);
 	draw_path(cam_index);
 	draw_car_path(cam_index);
 	glLineWidth(1.0f);
@@ -262,7 +265,7 @@ void keyboard(unsigned char key, int x, int y) {
 			camera[0].prp = glm::vec3(212.778366f, 163.684006f, 11.367419f);		// 카메라 위치
 			camera[0].vrp = glm::vec3(212.100739f, 115.430161f, 12.360538f);		// 바라보는 곳
 			camera[0].vup = init_camera_vup;
-			camera[0].fov_y = 30.0f;
+			camera[0].fov_y = 50.0f;
 			angle_rotate_u = 0.0f;
 			angle_rotate_v = 0.0f;
 			angle_rotate_n = 0.0f;
@@ -1265,7 +1268,7 @@ void initialize_camera(void) {
 	ViewMatrix[0] = glm::lookAt(camera[0].prp, camera[0].vrp, camera[0].vup); //u,v,n벡터를 lookAt으로 세팅
 
 																			  //	ProjectionMatrix = glm::perspective(15.0f*TO_RADIAN, aspect_ratio, 1.0f, 10000.0f);
-	camera[0].fov_y = 30.0f;
+	camera[0].fov_y = 50.0f;
 	camera[0].aspect_ratio = 1.5f; // will be set when the viewing window popped up.
 	camera[0].near_clip = 10.0f;
 	camera[0].far_clip = 150.0f; // 1500.0f;  // for debug
