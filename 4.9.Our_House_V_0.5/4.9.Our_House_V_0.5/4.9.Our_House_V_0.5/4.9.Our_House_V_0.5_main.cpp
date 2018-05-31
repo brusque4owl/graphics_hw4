@@ -16,7 +16,7 @@ GLint loc_ModelViewProjectionMatrix, loc_primitive_color;
 GLint loc_global_ambient_color_PS;
 loc_light_Parameters loc_light_PS[NUMBER_OF_LIGHT_SUPPORTED];
 loc_Material_Parameters loc_material_PS;
-GLint loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
+GLint loc_ModelMatrix, loc_ModelMatrixInvTrans, loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
 GLint cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
 
 // for Gouraud Shading shaders
@@ -45,7 +45,11 @@ bool view_driver=false;			// dirver camera
 glm::mat4 ViewProjectionMatrix[NUMBER_OF_CAMERAS], ViewMatrix[NUMBER_OF_CAMERAS], ProjectionMatrix[NUMBER_OF_CAMERAS];
 glm::mat4 ModelViewMatrix[NUMBER_OF_CAMERAS];
 glm::mat4 ModelViewProjectionMatrix;
+glm::mat4 ModelMatrix;
 glm::mat3 ModelViewMatrixInvTrans;
+glm::mat3 ModelMatrixInvTrans;
+glm::mat4 ModelViewMatrix_spot;
+
 typedef struct {
 	// eye, viewpoint, up vector.
 	glm::vec3 prp, vrp, vup; // in this example code, make vup always equal to the v direction.
@@ -383,6 +387,13 @@ void keyboard(unsigned char key, int x, int y) {
 			glDisable(GL_DEPTH_TEST);
 			fprintf(stdout, "^^^ Depth test disabled.\n");
 		}
+		glutPostRedisplay();
+		break;
+	case ']':
+		glUseProgram(h_ShaderProgram_PS);
+		light[0].light_on = 1 - light[0].light_on;
+		glUniform1i(loc_light_PS[0].light_on, light[0].light_on);
+		glUseProgram(0);
 		glutPostRedisplay();
 		break;
 		/*
@@ -1189,6 +1200,10 @@ void prepare_shader_program(void) {
 
 	// Basic shader is Phong shader
 	h_ShaderProgram_PS = LoadShaders(shader_info_PS);
+
+	loc_ModelMatrix = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrix");
+	loc_ModelMatrixInvTrans = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrixInvTrans");
+
 	loc_ModelViewProjectionMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewProjectionMatrix");
 	loc_ModelViewMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewMatrix");
 	loc_ModelViewMatrixInvTrans_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewMatrixInvTrans");
@@ -1515,6 +1530,7 @@ void set_up_scene_lights(void) {
 	light[0].light_on = 1;
 	///*
 	// 0,10,0 / 0.3, 0.5, 0.9
+	//light[0].position[0] = 0.0f; light[0].position[1] = 0.0f; 	// point light position in EC
 	light[0].position[0] = 250.0f; light[0].position[1] = 150.0f; 	// point light position in EC
 	light[0].position[2] = 50.0f; light[0].position[3] = 1.0f;
 
@@ -1540,9 +1556,9 @@ void set_up_scene_lights(void) {
 	light[0].specular_color[0] = 0.1f; light[0].specular_color[1] = 0.1f;
 	light[0].specular_color[2] = 0.1f; light[0].specular_color[3] = 1.0f;
 	//*/
-	// spot_light_WC: use light 1
+	// spot_light_WC: use light 1 // light no 0.
 	light[1].light_on = 1;
-	light[1].position[0] = 50.0f; light[1].position[1] = 50.0f; // spot light position in WC
+	light[1].position[0] = 215.0f; light[1].position[1] = 100.0f; // spot light position in WC
 	light[1].position[2] = 50.0f; light[1].position[3] = 1.0f;
 
 	light[1].ambient_color[0] = 0.2f; light[1].ambient_color[1] = 0.2f;
@@ -1554,8 +1570,8 @@ void set_up_scene_lights(void) {
 	light[1].specular_color[0] = 0.82f; light[1].specular_color[1] = 0.82f;
 	light[1].specular_color[2] = 0.82f; light[1].specular_color[3] = 1.0f;
 
-	light[1].spot_direction[0] = 0.0f; light[1].spot_direction[1] = -1.0f; // spot light direction in WC
-	light[1].spot_direction[2] = 0.0f;
+	light[1].spot_direction[0] = 0.0f; light[1].spot_direction[1] = 0.0f; // spot light direction in WC
+	light[1].spot_direction[2] = -1.0f;
 	light[1].spot_cutoff_angle = 70.0f;
 	light[1].spot_exponent = 27.0f;
 
@@ -1569,7 +1585,8 @@ void set_up_scene_lights(void) {
 	glUniform1i(loc_light_PS[1].light_on, light[1].light_on);
 	// need to supply position in EC for shading
 	// 일단 0번 카메라만 처리
-	glm::vec4 position_EC = ViewMatrix[VIEW_CAMERA] * glm::vec4(light[1].position[0], light[1].position[1],
+	//glm::vec4 position_EC = ViewMatrix[VIEW_CAMERA] * glm::vec4(light[1].position[0], light[1].position[1],
+	glm::vec4 position_EC = ModelMatrix * glm::vec4(light[1].position[0], light[1].position[1],
 		light[1].position[2], light[1].position[3]);
 	glUniform4fv(loc_light_PS[1].position, 1, &position_EC[0]);
 	glUniform4fv(loc_light_PS[1].ambient_color, 1, light[1].ambient_color);
@@ -1579,7 +1596,9 @@ void set_up_scene_lights(void) {
 	// note that the viewing transform is a rigid body transform
 	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
 	// 일단 0번 카메라만 처리
-	glm::vec3 direction_EC = glm::mat3(ViewMatrix[VIEW_CAMERA]) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
+
+	//glm::vec3 direction_EC = glm::mat3(ViewMatrix[VIEW_CAMERA]) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
+	glm::vec3 direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
 			light[1].spot_direction[2]);
 	glUniform3fv(loc_light_PS[1].spot_direction, 1, &direction_EC[0]);
 	glUniform1f(loc_light_PS[1].spot_cutoff_angle, light[1].spot_cutoff_angle);
