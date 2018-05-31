@@ -599,8 +599,8 @@ void define_static_objects(void) {
 	n_static_objects = 8;
 }
 
-// set_material_xxx_# functions
-void set_material_building(void) {
+// set_material_xxx_#_PS functions
+void set_material_building_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_BUILDING].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_BUILDING].material[0].diffuse_color);
@@ -609,7 +609,7 @@ void set_material_building(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_BUILDING].material[0].emissive_color);
 }
 
-void set_material_table_0(void) {
+void set_material_table_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_TABLE].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_TABLE].material[0].diffuse_color);
@@ -617,7 +617,7 @@ void set_material_table_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_TABLE].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_TABLE].material[0].emissive_color);
 }
-void set_material_table_1(void) {
+void set_material_table_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_TABLE].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_TABLE].material[1].diffuse_color);
@@ -626,7 +626,7 @@ void set_material_table_1(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_TABLE].material[1].emissive_color);
 }
 
-void set_material_light_0(void) {
+void set_material_light_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[0].diffuse_color);
@@ -634,7 +634,7 @@ void set_material_light_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_LIGHT].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[0].emissive_color);
 }
-void set_material_light_1(void) {
+void set_material_light_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[1].diffuse_color);
@@ -642,7 +642,7 @@ void set_material_light_1(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_LIGHT].material[1].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[1].emissive_color);
 }
-void set_material_light_2(void) {
+void set_material_light_2_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[2].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[2].diffuse_color);
@@ -650,7 +650,7 @@ void set_material_light_2(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_LIGHT].material[2].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[2].emissive_color);
 }
-void set_material_light_3(void) {
+void set_material_light_3_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[3].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[3].diffuse_color);
@@ -658,7 +658,7 @@ void set_material_light_3(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_LIGHT].material[3].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[3].emissive_color);
 }
-void set_material_light_4(void) {
+void set_material_light_4_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[4].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[4].diffuse_color);
@@ -666,7 +666,7 @@ void set_material_light_4(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_LIGHT].material[4].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[4].emissive_color);
 }
-void set_material_light_5(void) {
+void set_material_light_5_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_LIGHT].material[5].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[5].diffuse_color);
@@ -675,7 +675,7 @@ void set_material_light_5(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_LIGHT].material[5].emissive_color);
 }
 
-void set_material_teapot_0(void) {
+void set_material_teapot_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_TEAPOT].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_TEAPOT].material[0].diffuse_color);
@@ -683,7 +683,7 @@ void set_material_teapot_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_TEAPOT].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_TEAPOT].material[0].emissive_color);
 }
-void set_material_teapot_1(void) {
+void set_material_teapot_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_TEAPOT].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_TEAPOT].material[1].diffuse_color);
@@ -692,7 +692,7 @@ void set_material_teapot_1(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_TEAPOT].material[1].emissive_color);
 }
 
-void set_material_new_chair_0(void) {
+void set_material_new_chair_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color);
@@ -700,7 +700,7 @@ void set_material_new_chair_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_NEW_CHAIR].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].emissive_color);
 }
-void set_material_new_chair_1(void) {
+void set_material_new_chair_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color);
@@ -709,7 +709,7 @@ void set_material_new_chair_1(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].emissive_color);
 }
 
-void set_material_frame_0(void) {
+void set_material_frame_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_FRAME].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_FRAME].material[0].diffuse_color);
@@ -717,7 +717,7 @@ void set_material_frame_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_FRAME].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_FRAME].material[0].emissive_color);
 }
-void set_material_frame_1(void) {
+void set_material_frame_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_FRAME].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_FRAME].material[1].diffuse_color);
@@ -726,7 +726,7 @@ void set_material_frame_1(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_FRAME].material[1].emissive_color);
 }
 
-void set_material_new_picture_0(void) {
+void set_material_new_picture_0_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color);
@@ -734,7 +734,7 @@ void set_material_new_picture_0(void) {
 	glUniform1f(loc_material_PS.specular_exponent, static_objects[OBJ_NEW_PICTURE].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].emissive_color);
 }
-void set_material_new_picture_1(void) {
+void set_material_new_picture_1_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color);
@@ -743,7 +743,7 @@ void set_material_new_picture_1(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].emissive_color);
 }
 
-void set_material_cow(void) {
+void set_material_cow_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, static_objects[OBJ_COW].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, static_objects[OBJ_COW].material[0].diffuse_color);
@@ -752,8 +752,166 @@ void set_material_cow(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, static_objects[OBJ_COW].material[0].emissive_color);
 }
 ////////////////////////////////////////////////////////
-//end of set_material_xxx_# functions
+//end of set_material_xxx_#_PS functions
 ////////////////////////////////////////////////////////
+
+
+// set_material_xxx_#_GS functions
+void set_material_building_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_BUILDING].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_BUILDING].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_BUILDING].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_BUILDING].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_BUILDING].material[0].emissive_color);
+}
+
+void set_material_table_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_TABLE].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_TABLE].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_TABLE].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_TABLE].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_TABLE].material[0].emissive_color);
+}
+void set_material_table_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_TABLE].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_TABLE].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_TABLE].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_TABLE].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_TABLE].material[1].emissive_color);
+}
+
+void set_material_light_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[0].emissive_color);
+}
+void set_material_light_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[1].emissive_color);
+}
+void set_material_light_2_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[2].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[2].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[2].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[2].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[2].emissive_color);
+}
+void set_material_light_3_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[3].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[3].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[3].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[3].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[3].emissive_color);
+}
+void set_material_light_4_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[4].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[4].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[4].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[4].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[4].emissive_color);
+}
+void set_material_light_5_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_LIGHT].material[5].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_LIGHT].material[5].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_LIGHT].material[5].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_LIGHT].material[5].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_LIGHT].material[5].emissive_color);
+}
+
+void set_material_teapot_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_TEAPOT].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_TEAPOT].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_TEAPOT].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_TEAPOT].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_TEAPOT].material[0].emissive_color);
+}
+void set_material_teapot_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_TEAPOT].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_TEAPOT].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_TEAPOT].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_TEAPOT].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_TEAPOT].material[1].emissive_color);
+}
+
+void set_material_new_chair_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_NEW_CHAIR].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_NEW_CHAIR].material[0].emissive_color);
+}
+void set_material_new_chair_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_NEW_CHAIR].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_NEW_CHAIR].material[1].emissive_color);
+}
+
+void set_material_frame_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_FRAME].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_FRAME].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_FRAME].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_FRAME].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_FRAME].material[0].emissive_color);
+}
+void set_material_frame_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_FRAME].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_FRAME].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_FRAME].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_FRAME].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_FRAME].material[1].emissive_color);
+}
+
+void set_material_new_picture_0_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_NEW_PICTURE].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_NEW_PICTURE].material[0].emissive_color);
+}
+void set_material_new_picture_1_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_NEW_PICTURE].material[1].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_NEW_PICTURE].material[1].emissive_color);
+}
+
+void set_material_cow_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, static_objects[OBJ_COW].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, static_objects[OBJ_COW].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, static_objects[OBJ_COW].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, static_objects[OBJ_COW].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, static_objects[OBJ_COW].material[0].emissive_color);
+}
+////////////////////////////////////////////////////////
+//end of set_material_xxx_#_GS functions
+////////////////////////////////////////////////////////
+
 
 void draw_static_object(Object *obj_ptr, int instance_ID, int cam_index) {
 	glFrontFace(obj_ptr->front_face_mode);
@@ -986,7 +1144,7 @@ void define_animated_tiger(void) {
 	glBindVertexArray(0);
 	
 }
-void set_material_tiger(void) {
+void set_material_tiger_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, tiger[0].material[0].ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, tiger[0].material[0].diffuse_color);
@@ -1222,7 +1380,7 @@ void prepare_geom_obj(int geom_obj_ID, char *filename, GEOM_OBJ_TYPE geom_obj_ty
 	free(geom_obj_vertices[geom_obj_ID]);
 }
 
-void set_material_car_body(void) {
+void set_material_car_body_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, material_car_body.ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, material_car_body.diffuse_color);
@@ -1230,7 +1388,7 @@ void set_material_car_body(void) {
 	glUniform1f(loc_material_PS.specular_exponent, material_car_body.specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, material_car_body.emissive_color);
 }
-void set_material_car_wheel(void) {
+void set_material_car_wheel_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, material_car_wheel.ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, material_car_wheel.diffuse_color);
@@ -1238,7 +1396,7 @@ void set_material_car_wheel(void) {
 	glUniform1f(loc_material_PS.specular_exponent, material_car_wheel.specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, material_car_wheel.emissive_color);
 }
-void set_material_car_nut(void) {
+void set_material_car_nut_PS(void) {
 	// assume ShaderProgram_PS is used
 	glUniform4fv(loc_material_PS.ambient_color, 1, material_car_nut.ambient_color);
 	glUniform4fv(loc_material_PS.diffuse_color, 1, material_car_nut.diffuse_color);
@@ -1287,7 +1445,7 @@ CAR_POINT car_point[NUM_CAR_POINTS] = {
 void draw_wheel_and_nut(int cam_index) {
 	// angle is used in Hierarchical_Car_Correct later
 	int i;
-	set_material_car_wheel();
+	set_material_car_wheel_PS();
 	//glUniform3f(loc_primitive_color, 0.000f, 0.808f, 0.820f); // color name: DarkTurquoise
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
@@ -1295,7 +1453,7 @@ void draw_wheel_and_nut(int cam_index) {
 	draw_geom_obj(GEOM_OBJ_ID_CAR_WHEEL); // draw wheel
 
 	for (i = 0; i < 5; i++) {
-		set_material_car_nut();
+		set_material_car_nut_PS();
 		ModelMatrix_CAR_NUT = glm::rotate(ModelMatrix_CAR_WHEEL, TO_RADIAN*72.0f*i, glm::vec3(0.0f, 0.0f, 1.0f));
 		ModelMatrix_CAR_NUT = glm::translate(ModelMatrix_CAR_NUT, glm::vec3(rad - 0.5f, 0.0f, ww));
 		ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_NUT;
@@ -1312,7 +1470,7 @@ void draw_wheel_and_nut(int cam_index) {
 void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	//ModelMatrix_CAR_BODY = glm::rotate(glm::mat4(1.0f), -rotation_angle_car, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUseProgram(h_ShaderProgram_PS);
-	set_material_car_body();
+	set_material_car_body_PS();
 	ModelMatrix_CAR_BODY = glm::translate(glm::mat4(1.0f), glm::vec3(car_pos.x, car_pos.y, car_pos.z));
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, car_pos.rot*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));  // z축 기준으로 좌우회전가능
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, 90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
