@@ -100,7 +100,7 @@ vec4 lighting_equation(in vec3 P_EC, in vec3 N_EC) {
 				vec3 H_EC = normalize(L_EC - normalize(P_EC));	// VPpli + VPe(꼭지점에서 원점) // P_EC는 원점에서 꼭지점 방향
 				tmp_float = dot(N_EC, H_EC); 
 				if (tmp_float > zero_f) {	// n 내적 h(하프웨이 벡터) = cos(알파) // 0.0<알파<90.0
-					// 정반사에서 f값은 난반사에서의 내적값이 0보다 크기 때문에 f=1이 되어 여기선 생략해준다.
+					// 난반사에서의 내적값이 0보다 크기 때문에 정반사에서 f값은 f=1이 되어 여기선 생략해준다.
 					local_color_sum += u_light[i].specular_color
 										   *u_material.specular_color*pow(tmp_float, u_material.specular_exponent);
 				}
