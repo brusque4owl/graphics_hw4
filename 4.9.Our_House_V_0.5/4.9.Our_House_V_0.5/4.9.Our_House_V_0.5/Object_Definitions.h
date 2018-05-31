@@ -1469,7 +1469,8 @@ void draw_wheel_and_nut(int cam_index) {
 
 void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	//ModelMatrix_CAR_BODY = glm::rotate(glm::mat4(1.0f), -rotation_angle_car, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUseProgram(h_ShaderProgram_PS);
+	//glUseProgram(h_ShaderProgram_PS);
+	glUseProgram(cur_shader);
 	set_material_car_body_PS();
 	ModelMatrix_CAR_BODY = glm::translate(glm::mat4(1.0f), glm::vec3(car_pos.x, car_pos.y, car_pos.z));
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, car_pos.rot*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));  // z축 기준으로 좌우회전가능

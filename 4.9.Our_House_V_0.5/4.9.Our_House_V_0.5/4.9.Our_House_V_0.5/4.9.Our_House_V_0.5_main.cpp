@@ -7,7 +7,7 @@
 #include "Shaders/LoadShaders.h"
 #include "My_Shading.h"
 GLuint h_ShaderProgram, h_ShaderProgram_PS, h_ShaderProgram_GS; // handle to shader program
-
+GLuint cur_shader;
 // for simple shaders
 GLint loc_ModelViewProjectionMatrix, loc_primitive_color;
 
@@ -97,7 +97,7 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 		draw_main_camera_axes(cam_index);
 		draw_frustum_line(cam_index);
 	}
-	// draw_car_dummy us h_ShaderProgram_PS
+	// draw_car_dummy use h_ShaderProgram_PS
 	draw_car_dummy(cam_index);
 
 	glUseProgram(h_ShaderProgram);
@@ -106,7 +106,8 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 	glLineWidth(1.0f);
 
 
-	glUseProgram(h_ShaderProgram_PS);
+	//glUseProgram(h_ShaderProgram_PS);
+	glUseProgram(cur_shader);
 
 	set_material_building_PS();
 	draw_static_object(&(static_objects[OBJ_BUILDING]), 0, cam_index);
@@ -1154,6 +1155,8 @@ void prepare_shader_program(void) {
 	loc_ModelViewMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewMatrix");
 	loc_ModelViewMatrixInvTrans_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewMatrixInvTrans");
 	loc_global_ambient_color_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_global_ambient_color");
+
+	cur_shader = h_ShaderProgram_PS;
 
 	h_ShaderProgram_GS = LoadShaders(shader_info_GS);
 	loc_ModelViewProjectionMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelViewProjectionMatrix");
