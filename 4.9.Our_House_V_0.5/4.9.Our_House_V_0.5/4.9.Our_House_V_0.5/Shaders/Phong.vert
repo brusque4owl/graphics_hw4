@@ -14,6 +14,7 @@ out vec3 v_normal_EC;
 void main(void) {	
 	//v_position_EC = vec3(u_ModelViewMatrix*vec4(a_position, 1.0f));
 	//v_normal_EC = normalize(u_ModelViewMatrixInvTrans*a_normal);  
+	// Do not follow camera!
 	v_position_EC = vec3(u_ModelMatrix*vec4(a_position, 1.0f));
 	v_normal_EC = normalize(u_ModelMatrixInvTrans*a_normal);  
 

@@ -16,8 +16,9 @@ GLint loc_ModelViewProjectionMatrix, loc_primitive_color;
 GLint loc_global_ambient_color_PS;
 loc_light_Parameters loc_light_PS[NUMBER_OF_LIGHT_SUPPORTED];
 loc_Material_Parameters loc_material_PS;
-GLint loc_ModelMatrix, loc_ModelMatrixInvTrans, loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
-GLint cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
+GLint loc_ModelMatrix_PS, loc_ModelMatrixInvTrans_PS, loc_ModelMatrix_GS, loc_ModelMatrixInvTrans_GS;
+GLint loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
+GLint cur_loc_ModelMatrix, cur_loc_ModelMatrixInvTrans, cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
 
 // for Gouraud Shading shaders
 #define NUMBER_OF_LIGHT_SUPPORTED 4 
@@ -394,7 +395,7 @@ void keyboard(unsigned char key, int x, int y) {
 		light[0].light_on = 1 - light[0].light_on;
 		glUniform1i(loc_light_PS[0].light_on, light[0].light_on);
 		glUseProgram(0);
-		glutPostRedisplay();
+		//printf("light0 = %d\tlight2 = %d\n", light[0].light_on, light[2].light_on);
 		break;
 		/*
 	case 't':	// used for debugging tiger path
@@ -694,6 +695,8 @@ void mousepress(int button, int state, int x, int y) {
 	if ((button == GLUT_RIGHT_BUTTON)) {
 		if (state == GLUT_DOWN && shift_status == GLUT_ACTIVE_SHIFT){
 			cur_shader = h_ShaderProgram_GS;
+			cur_loc_ModelMatrix = loc_ModelMatrix_GS;
+			cur_loc_ModelMatrixInvTrans = loc_ModelMatrixInvTrans_GS;
 			cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_GS;
 			cur_loc_ModelViewMatrix = loc_ModelViewMatrix_GS;
 			cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_GS;
@@ -701,6 +704,8 @@ void mousepress(int button, int state, int x, int y) {
 		}
 		else{
 			cur_shader = h_ShaderProgram_PS;
+			cur_loc_ModelMatrix = loc_ModelMatrix_PS;
+			cur_loc_ModelMatrixInvTrans = loc_ModelMatrixInvTrans_PS;
 			cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_PS;
 			cur_loc_ModelViewMatrix = loc_ModelViewMatrix_PS;
 			cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_PS;
@@ -1193,16 +1198,14 @@ void prepare_shader_program(void) {
 	};
 
 	h_ShaderProgram = LoadShaders(shader_info);
-	//glUseProgram(h_ShaderProgram);
-
 	loc_ModelViewProjectionMatrix = glGetUniformLocation(h_ShaderProgram, "u_ModelViewProjectionMatrix");
 	loc_primitive_color = glGetUniformLocation(h_ShaderProgram, "u_primitive_color");
 
 	// Basic shader is Phong shader
 	h_ShaderProgram_PS = LoadShaders(shader_info_PS);
 
-	loc_ModelMatrix = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrix");
-	loc_ModelMatrixInvTrans = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrixInvTrans");
+	loc_ModelMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrix");
+	loc_ModelMatrixInvTrans_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelMatrixInvTrans");
 
 	loc_ModelViewProjectionMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewProjectionMatrix");
 	loc_ModelViewMatrix_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_ModelViewMatrix");
@@ -1210,12 +1213,18 @@ void prepare_shader_program(void) {
 	loc_global_ambient_color_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_global_ambient_color");
 
 	cur_shader = h_ShaderProgram_PS;
+	cur_loc_ModelMatrix = loc_ModelMatrix_PS;
+	cur_loc_ModelMatrixInvTrans = loc_ModelMatrixInvTrans_PS;
 	cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_PS;
 	cur_loc_ModelViewMatrix = loc_ModelViewMatrix_PS;
 	cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_PS;
 
 
 	h_ShaderProgram_GS = LoadShaders(shader_info_GS);
+
+	loc_ModelMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelMatrix");
+	loc_ModelMatrixInvTrans_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelMatrixInvTrans");
+
 	loc_ModelViewProjectionMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelViewProjectionMatrix");
 	loc_ModelViewMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelViewMatrix");
 	loc_ModelViewMatrixInvTrans_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelViewMatrixInvTrans");
@@ -1528,9 +1537,6 @@ void set_up_scene_lights(void) {
 	int i;
 	// point_light_EC: use light 0
 	light[0].light_on = 1;
-	///*
-	// 0,10,0 / 0.3, 0.5, 0.9
-	//light[0].position[0] = 0.0f; light[0].position[1] = 0.0f; 	// point light position in EC
 	light[0].position[0] = 250.0f; light[0].position[1] = 150.0f; 	// point light position in EC
 	light[0].position[2] = 50.0f; light[0].position[3] = 1.0f;
 
@@ -1542,23 +1548,10 @@ void set_up_scene_lights(void) {
 
 	light[0].specular_color[0] = 0.4f; light[0].specular_color[1] = 0.4f;
 	light[0].specular_color[2] = 0.4f; light[0].specular_color[3] = 1.0f;
-	//*/
-	/*
-	light[0].position[0] = 50.0f; light[0].position[1] = 50.0f; 	// point light position in EC
-	light[0].position[2] = 50.0f; light[0].position[3] = 1.0f;
 
-	light[0].ambient_color[0] = 0.1f; light[0].ambient_color[1] = 0.1f;
-	light[0].ambient_color[2] = 0.1f; light[0].ambient_color[3] = 1.0f;
-
-	light[0].diffuse_color[0] = 0.1f; light[0].diffuse_color[1] = 0.1f;
-	light[0].diffuse_color[2] = 0.1f; light[0].diffuse_color[3] = 1.0f;
-
-	light[0].specular_color[0] = 0.1f; light[0].specular_color[1] = 0.1f;
-	light[0].specular_color[2] = 0.1f; light[0].specular_color[3] = 1.0f;
-	//*/
-	// spot_light_WC: use light 1 // light no 0.
+	// spot_light_WC: use light 1 // 소 머리 위로 spot	// 215.0f, 110.0f
 	light[1].light_on = 1;
-	light[1].position[0] = 215.0f; light[1].position[1] = 100.0f; // spot light position in WC
+	light[1].position[0] = 215.0f; light[1].position[1] = 110.0f; // spot light position in WC
 	light[1].position[2] = 50.0f; light[1].position[3] = 1.0f;
 
 	light[1].ambient_color[0] = 0.2f; light[1].ambient_color[1] = 0.2f;
@@ -1575,6 +1568,46 @@ void set_up_scene_lights(void) {
 	light[1].spot_cutoff_angle = 70.0f;
 	light[1].spot_exponent = 27.0f;
 
+	// spot_light_WC: use light 2 // 차위로 spot // 50.0f ,140.0f
+	light[2].light_on = 1;
+	
+	light[2].position[0] = 50.0f; light[2].position[1] = 140.0f; // spot light position in WC
+	light[2].position[2] = 50.0f; light[2].position[3] = 1.0f;
+
+	light[2].ambient_color[0] = 0.2f; light[2].ambient_color[1] = 0.2f;
+	light[2].ambient_color[2] = 0.2f; light[2].ambient_color[3] = 1.0f;
+
+	light[2].diffuse_color[0] = 0.82f; light[2].diffuse_color[1] = 0.82f;
+	light[2].diffuse_color[2] = 0.82f; light[2].diffuse_color[3] = 1.0f;
+
+	light[2].specular_color[0] = 0.82f; light[2].specular_color[1] = 0.82f;
+	light[2].specular_color[2] = 0.82f; light[2].specular_color[3] = 1.0f;
+	
+	light[2].spot_direction[0] = 0.0f; light[2].spot_direction[1] = 0.0f; // spot light direction in WC
+	light[2].spot_direction[2] = -1.0f;
+	light[2].spot_cutoff_angle = 70.0f;
+	light[2].spot_exponent = 27.0f;
+	
+	// spot_light_WC: use light 3 // 190.0f, 60.0f
+	light[3].light_on = 1;
+
+	light[3].position[0] = 190.0f; light[3].position[1] = 60.0f; // spot light position in WC
+	light[3].position[2] = 50.0f; light[3].position[3] = 1.0f;
+
+	light[3].ambient_color[0] = 0.2f; light[3].ambient_color[1] = 0.2f;
+	light[3].ambient_color[2] = 0.2f; light[3].ambient_color[3] = 1.0f;
+
+	light[3].diffuse_color[0] = 0.82f; light[3].diffuse_color[1] = 0.82f;
+	light[3].diffuse_color[2] = 0.82f; light[3].diffuse_color[3] = 1.0f;
+
+	light[3].specular_color[0] = 0.82f; light[3].specular_color[1] = 0.82f;
+	light[3].specular_color[2] = 0.82f; light[3].specular_color[3] = 1.0f;
+
+	light[3].spot_direction[0] = 0.0f; light[3].spot_direction[1] = 0.0f; // spot light direction in WC
+	light[3].spot_direction[2] = -1.0f;
+	light[3].spot_cutoff_angle = 70.0f;
+	light[3].spot_exponent = 27.0f;
+
 	glUseProgram(h_ShaderProgram_PS);
 	glUniform1i(loc_light_PS[0].light_on, light[0].light_on);
 	glUniform4fv(loc_light_PS[0].position, 1, light[0].position);
@@ -1582,9 +1615,9 @@ void set_up_scene_lights(void) {
 	glUniform4fv(loc_light_PS[0].diffuse_color, 1, light[0].diffuse_color);
 	glUniform4fv(loc_light_PS[0].specular_color, 1, light[0].specular_color);
 
+	// light 1
 	glUniform1i(loc_light_PS[1].light_on, light[1].light_on);
 	// need to supply position in EC for shading
-	// 일단 0번 카메라만 처리
 	//glm::vec4 position_EC = ViewMatrix[VIEW_CAMERA] * glm::vec4(light[1].position[0], light[1].position[1],
 	glm::vec4 position_EC = ModelMatrix * glm::vec4(light[1].position[0], light[1].position[1],
 		light[1].position[2], light[1].position[3]);
@@ -1595,7 +1628,6 @@ void set_up_scene_lights(void) {
 	// need to supply direction in EC for shading in this example shader
 	// note that the viewing transform is a rigid body transform
 	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
-	// 일단 0번 카메라만 처리
 
 	//glm::vec3 direction_EC = glm::mat3(ViewMatrix[VIEW_CAMERA]) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
 	glm::vec3 direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
@@ -1603,6 +1635,44 @@ void set_up_scene_lights(void) {
 	glUniform3fv(loc_light_PS[1].spot_direction, 1, &direction_EC[0]);
 	glUniform1f(loc_light_PS[1].spot_cutoff_angle, light[1].spot_cutoff_angle);
 	glUniform1f(loc_light_PS[1].spot_exponent, light[1].spot_exponent);
+
+	
+	// light 2
+	glUniform1i(loc_light_PS[2].light_on, light[2].light_on);
+	position_EC = ModelMatrix * glm::vec4(light[2].position[0], light[2].position[1],
+		light[2].position[2], light[2].position[3]);
+	glUniform4fv(loc_light_PS[2].position, 1, &position_EC[0]);
+	glUniform4fv(loc_light_PS[2].ambient_color, 1, light[2].ambient_color);
+	glUniform4fv(loc_light_PS[2].diffuse_color, 1, light[2].diffuse_color);
+	glUniform4fv(loc_light_PS[2].specular_color, 1, light[2].specular_color);
+	// need to supply direction in EC for shading in this example shader
+	// note that the viewing transform is a rigid body transform
+	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
+	
+	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[2].spot_direction[0], light[2].spot_direction[1],
+		light[2].spot_direction[2]);
+	glUniform3fv(loc_light_PS[2].spot_direction, 1, &direction_EC[0]);
+	glUniform1f(loc_light_PS[2].spot_cutoff_angle, light[2].spot_cutoff_angle);
+	glUniform1f(loc_light_PS[2].spot_exponent, light[2].spot_exponent);
+	
+	// light 3
+	glUniform1i(loc_light_PS[3].light_on, light[3].light_on);
+	position_EC = ModelMatrix * glm::vec4(light[3].position[0], light[3].position[1],
+		light[3].position[2], light[3].position[3]);
+	glUniform4fv(loc_light_PS[3].position, 1, &position_EC[0]);
+	glUniform4fv(loc_light_PS[3].ambient_color, 1, light[3].ambient_color);
+	glUniform4fv(loc_light_PS[3].diffuse_color, 1, light[3].diffuse_color);
+	glUniform4fv(loc_light_PS[3].specular_color, 1, light[3].specular_color);
+	// need to supply direction in EC for shading in this example shader
+	// note that the viewing transform is a rigid body transform
+	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
+
+	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[3].spot_direction[0], light[3].spot_direction[1],
+		light[3].spot_direction[2]);
+	glUniform3fv(loc_light_PS[3].spot_direction, 1, &direction_EC[0]);
+	glUniform1f(loc_light_PS[3].spot_cutoff_angle, light[3].spot_cutoff_angle);
+	glUniform1f(loc_light_PS[3].spot_exponent, light[3].spot_exponent);
+
 	glUseProgram(0);
 
 
@@ -1615,8 +1685,7 @@ void set_up_scene_lights(void) {
 
 	glUniform1i(loc_light_GS[1].light_on, light[1].light_on);
 	// need to supply position in EC for shading
-	// 일단 0번 카메라만 처리
-	position_EC = ViewMatrix[VIEW_CAMERA] * glm::vec4(light[1].position[0], light[1].position[1],
+	position_EC = ModelMatrix * glm::vec4(light[1].position[0], light[1].position[1],
 		light[1].position[2], light[1].position[3]);
 	glUniform4fv(loc_light_GS[1].position, 1, &position_EC[0]);
 	glUniform4fv(loc_light_GS[1].ambient_color, 1, light[1].ambient_color);
@@ -1625,13 +1694,49 @@ void set_up_scene_lights(void) {
 	// need to supply direction in EC for shading in this example shader
 	// note that the viewing transform is a rigid body transform
 	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
-	// 일단 0번 카메라만 처리
-	direction_EC = glm::mat3(ViewMatrix[VIEW_CAMERA]) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
+	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[1].spot_direction[0], light[1].spot_direction[1],
 		light[1].spot_direction[2]);
 	glUniform3fv(loc_light_GS[1].spot_direction, 1, &direction_EC[0]);
 	glUniform1f(loc_light_GS[1].spot_cutoff_angle, light[1].spot_cutoff_angle);
 	glUniform1f(loc_light_GS[1].spot_exponent, light[1].spot_exponent);
+
+
+	glUniform1i(loc_light_GS[2].light_on, light[2].light_on);
+	// need to supply position in EC for shading
+	position_EC = ModelMatrix * glm::vec4(light[2].position[0], light[2].position[1],
+		light[2].position[2], light[2].position[3]);
+	glUniform4fv(loc_light_GS[2].position, 1, &position_EC[0]);
+	glUniform4fv(loc_light_GS[2].ambient_color, 1, light[2].ambient_color);
+	glUniform4fv(loc_light_GS[2].diffuse_color, 1, light[2].diffuse_color);
+	glUniform4fv(loc_light_GS[2].specular_color, 1, light[2].specular_color);
+	// need to supply direction in EC for shading in this example shader
+	// note that the viewing transform is a rigid body transform
+	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
+	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[2].spot_direction[0], light[2].spot_direction[1],
+		light[2].spot_direction[2]);
+	glUniform3fv(loc_light_GS[2].spot_direction, 1, &direction_EC[0]);
+	glUniform1f(loc_light_GS[2].spot_cutoff_angle, light[2].spot_cutoff_angle);
+	glUniform1f(loc_light_GS[2].spot_exponent, light[2].spot_exponent);
+
+	glUniform1i(loc_light_GS[3].light_on, light[3].light_on);
+	// need to supply position in EC for shading
+	position_EC = ModelMatrix * glm::vec4(light[3].position[0], light[3].position[1],
+		light[3].position[2], light[3].position[3]);
+	glUniform4fv(loc_light_GS[3].position, 1, &position_EC[0]);
+	glUniform4fv(loc_light_GS[3].ambient_color, 1, light[3].ambient_color);
+	glUniform4fv(loc_light_GS[3].diffuse_color, 1, light[3].diffuse_color);
+	glUniform4fv(loc_light_GS[3].specular_color, 1, light[3].specular_color);
+	// need to supply direction in EC for shading in this example shader
+	// note that the viewing transform is a rigid body transform
+	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
+	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[3].spot_direction[0], light[3].spot_direction[1],
+		light[3].spot_direction[2]);
+	glUniform3fv(loc_light_GS[3].spot_direction, 1, &direction_EC[0]);
+	glUniform1f(loc_light_GS[3].spot_cutoff_angle, light[3].spot_cutoff_angle);
+	glUniform1f(loc_light_GS[3].spot_exponent, light[3].spot_exponent);
+
 	glUseProgram(0);
+
 }
 
 char car_body[] = "Data/car_body_triangles_v.txt";
