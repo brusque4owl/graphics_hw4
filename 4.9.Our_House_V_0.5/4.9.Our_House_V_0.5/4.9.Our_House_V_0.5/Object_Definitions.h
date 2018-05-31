@@ -919,9 +919,14 @@ void draw_static_object(Object *obj_ptr, int instance_ID, int cam_index) {
 	ModelViewMatrix[cam_index] = ViewMatrix[cam_index] * obj_ptr->ModelMatrix[instance_ID];
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
+	/*
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+	*/
+	glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 
 	// 필요한 경우 아래 문장 주석처리
 	glUniform3f(loc_primitive_color, obj_ptr->material[instance_ID].diffuse_color[0],
@@ -1152,6 +1157,15 @@ void set_material_tiger_PS(void) {
 	glUniform1f(loc_material_PS.specular_exponent, tiger[0].material[0].specular_exponent);
 	glUniform4fv(loc_material_PS.emissive_color, 1, tiger[0].material[0].emissive_color);
 }
+
+void set_material_tiger_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, tiger[0].material[0].ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, tiger[0].material[0].diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, tiger[0].material[0].specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, tiger[0].material[0].specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, tiger[0].material[0].emissive_color);
+}
 typedef struct{
 	float x,y,z;
 }TIGER;
@@ -1215,9 +1229,14 @@ void draw_animated_tiger(int cam_index) {
 
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
+	/*
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+	*/
+	glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 
 	glUniform3f(loc_primitive_color, tiger[tiger_data.cur_frame].material[0].diffuse_color[0],
 		tiger[tiger_data.cur_frame].material[0].diffuse_color[1], tiger[tiger_data.cur_frame].material[0].diffuse_color[2]);
@@ -1405,6 +1424,163 @@ void set_material_car_nut_PS(void) {
 	glUniform4fv(loc_material_PS.emissive_color, 1, material_car_nut.emissive_color);
 }
 
+void set_material_car_body_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, material_car_body.ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, material_car_body.diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, material_car_body.specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, material_car_body.specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, material_car_body.emissive_color);
+}
+void set_material_car_wheel_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, material_car_wheel.ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, material_car_wheel.diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, material_car_wheel.specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, material_car_wheel.specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, material_car_wheel.emissive_color);
+}
+void set_material_car_nut_GS(void) {
+	// assume ShaderProgram_GS is used
+	glUniform4fv(loc_material_GS.ambient_color, 1, material_car_nut.ambient_color);
+	glUniform4fv(loc_material_GS.diffuse_color, 1, material_car_nut.diffuse_color);
+	glUniform4fv(loc_material_GS.specular_color, 1, material_car_nut.specular_color);
+	glUniform1f(loc_material_GS.specular_exponent, material_car_nut.specular_exponent);
+	glUniform4fv(loc_material_GS.emissive_color, 1, material_car_nut.emissive_color);
+}
+void set_material_building(){
+	if(cur_shader == h_ShaderProgram_PS)
+		set_material_building_PS();
+	else
+		set_material_building_GS();
+}
+void set_material_table_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_table_0_PS();
+	else
+		set_material_table_0_GS();
+}
+void set_material_table_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_table_1_PS();
+	else
+		set_material_table_1_GS();
+}
+void set_material_light_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_0_PS();
+	else
+		set_material_light_0_GS();
+}
+void set_material_light_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_1_PS();
+	else
+		set_material_light_1_GS();
+}
+void set_material_light_2() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_2_PS();
+	else
+		set_material_light_2_GS();
+}
+void set_material_light_3() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_3_PS();
+	else
+		set_material_light_3_GS();
+}
+void set_material_light_4() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_4_PS();
+	else
+		set_material_light_4_GS();
+}
+void set_material_light_5() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_light_5_PS();
+	else
+		set_material_light_5_GS();
+}
+void set_material_teapot_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_teapot_0_PS();
+	else
+		set_material_teapot_0_GS();
+}
+void set_material_teapot_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_teapot_1_PS();
+	else
+		set_material_teapot_1_GS();
+}
+void set_material_new_chair_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_new_chair_0_PS();
+	else
+		set_material_new_chair_0_GS();
+}
+void set_material_new_chair_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_new_chair_1_PS();
+	else
+		set_material_new_chair_1_GS();
+}
+void set_material_frame_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_frame_0_PS();
+	else
+		set_material_frame_0_GS();
+}
+void set_material_frame_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_frame_1_PS();
+	else
+		set_material_frame_1_GS();
+}
+void set_material_new_picture_0() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_new_picture_0_PS();
+	else
+		set_material_new_picture_0_GS();
+}
+void set_material_new_picture_1() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_new_picture_1_PS();
+	else
+		set_material_new_picture_1_GS();
+}
+void set_material_cow() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_cow_PS();
+	else
+		set_material_cow_GS();
+}
+void set_material_tiger() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_tiger_PS();
+	else
+		set_material_tiger_GS();
+}
+void set_material_car_wheel() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_car_wheel_PS();
+	else
+		set_material_car_wheel_GS();
+}
+void set_material_car_nut() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_car_nut_PS();
+	else
+		set_material_car_nut_GS();
+}
+void set_material_car_body() {
+	if (cur_shader == h_ShaderProgram_PS)
+		set_material_car_body_PS();
+	else
+		set_material_car_body_GS();
+}
+
 void draw_geom_obj(int geom_obj_ID) {
 	glBindVertexArray(geom_obj_VAO[geom_obj_ID]);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * geom_obj_n_triangles[geom_obj_ID]);
@@ -1445,24 +1621,36 @@ CAR_POINT car_point[NUM_CAR_POINTS] = {
 void draw_wheel_and_nut(int cam_index) {
 	// angle is used in Hierarchical_Car_Correct later
 	int i;
-	set_material_car_wheel_PS();
+	set_material_car_wheel();
+	//set_material_car_wheel_PS();
 	//glUniform3f(loc_primitive_color, 0.000f, 0.808f, 0.820f); // color name: DarkTurquoise
+	/*
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+	*/
+	glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_geom_obj(GEOM_OBJ_ID_CAR_WHEEL); // draw wheel
 
 	for (i = 0; i < 5; i++) {
-		set_material_car_nut_PS();
+		set_material_car_nut();
+		//set_material_car_nut_PS();
 		ModelMatrix_CAR_NUT = glm::rotate(ModelMatrix_CAR_WHEEL, TO_RADIAN*72.0f*i, glm::vec3(0.0f, 0.0f, 1.0f));
 		ModelMatrix_CAR_NUT = glm::translate(ModelMatrix_CAR_NUT, glm::vec3(rad - 0.5f, 0.0f, ww));
 		ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_NUT;
 		glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
 		//glUniform3f(loc_primitive_color, 0.690f, 0.769f, 0.871f); // color name: LightSteelBlue
+		/*
 		glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 		glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
 		glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+		*/
+		glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+		glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+		glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 		draw_geom_obj(GEOM_OBJ_ID_CAR_NUT); // draw i-th nut
 	}
 }
@@ -1471,7 +1659,8 @@ void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	//ModelMatrix_CAR_BODY = glm::rotate(glm::mat4(1.0f), -rotation_angle_car, glm::vec3(0.0f, 1.0f, 0.0f));
 	//glUseProgram(h_ShaderProgram_PS);
 	glUseProgram(cur_shader);
-	set_material_car_body_PS();
+	set_material_car_body();
+	//set_material_car_body_PS();
 	ModelMatrix_CAR_BODY = glm::translate(glm::mat4(1.0f), glm::vec3(car_pos.x, car_pos.y, car_pos.z));
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, car_pos.rot*TO_RADIAN, glm::vec3(0.0f, 0.0f, 1.0f));  // z축 기준으로 좌우회전가능
 	ModelMatrix_CAR_BODY = glm::rotate(ModelMatrix_CAR_BODY, 90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -1480,9 +1669,14 @@ void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 	ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_BODY;
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	//glUniform3f(loc_primitive_color, 0.498f, 1.000f, 0.831f); // color name: Aquamarine
+	/*
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+	*/
+	glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+	glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_geom_obj(GEOM_OBJ_ID_CAR_BODY); // draw body
 
 	/*

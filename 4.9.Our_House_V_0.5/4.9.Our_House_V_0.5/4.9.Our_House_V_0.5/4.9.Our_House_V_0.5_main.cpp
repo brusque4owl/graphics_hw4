@@ -17,6 +17,7 @@ GLint loc_global_ambient_color_PS;
 loc_light_Parameters loc_light_PS[NUMBER_OF_LIGHT_SUPPORTED];
 loc_Material_Parameters loc_material_PS;
 GLint loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
+GLint cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
 
 // for Gouraud Shading shaders
 #define NUMBER_OF_LIGHT_SUPPORTED 4 
@@ -109,51 +110,70 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 	//glUseProgram(h_ShaderProgram_PS);
 	glUseProgram(cur_shader);
 
-	set_material_building_PS();
+	set_material_building();
+	//set_material_building_PS();
 	draw_static_object(&(static_objects[OBJ_BUILDING]), 0, cam_index);
 
-	set_material_table_0_PS();
+	set_material_table_0();
+	//set_material_table_0_PS();
 	draw_static_object(&(static_objects[OBJ_TABLE]), 0, cam_index);
-	set_material_table_1_PS();
+	set_material_table_1();
+	//set_material_table_1_PS();
 	draw_static_object(&(static_objects[OBJ_TABLE]), 1, cam_index);	// takes given teapot
 
-	set_material_light_0_PS();
+	set_material_light_0();
+	//set_material_light_0_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 0, cam_index);
-	set_material_light_1_PS();
+	set_material_light_1();
+	//set_material_light_1_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 1, cam_index);
-	set_material_light_2_PS();
+	set_material_light_2();
+	//set_material_light_2_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 2, cam_index);
-	set_material_light_3_PS();
+	set_material_light_3();
+	//set_material_light_3_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 3, cam_index);
-	set_material_light_4_PS();
+	set_material_light_4();
+	//set_material_light_4_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 4, cam_index);
-	set_material_light_5_PS();
+	set_material_light_5();
+	//set_material_light_5_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 5, cam_index);			// NEW OBJ_LIGHT
 
-	set_material_teapot_0_PS();
+	set_material_teapot_0();
+	//set_material_teapot_0_PS();
 	draw_static_object(&(static_objects[OBJ_TEAPOT]), 0, cam_index);	// on the OBJ_TABLE 1
-	set_material_teapot_1_PS();
+	set_material_teapot_1();
+	//set_material_teapot_1_PS();
 	draw_static_object(&(static_objects[OBJ_TEAPOT]), 1, cam_index);			// NEW OBJ_TEAPOT
 	
-	set_material_new_chair_0_PS();
+	set_material_new_chair_0();
+	//set_material_new_chair_0_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_CHAIR]), 0, cam_index);
-	set_material_new_chair_1_PS();
+	set_material_new_chair_1();
+	//set_material_new_chair_1_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_CHAIR]), 1, cam_index);		// NEW OBJ_NEW_CHAIR
 	
-	set_material_frame_0_PS();
+	set_material_frame_0();
+	//set_material_frame_0_PS();
 	draw_static_object(&(static_objects[OBJ_FRAME]), 0, cam_index);
-	set_material_frame_1_PS();
+	set_material_frame_1();
+	//set_material_frame_1_PS();
 	draw_static_object(&(static_objects[OBJ_FRAME]), 1, cam_index);			// NEW OBJ_FRAME
 	
-	set_material_new_picture_0_PS();
+	set_material_new_picture_0();
+	//set_material_new_picture_0_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_PICTURE]), 0, cam_index);
-	set_material_new_picture_1_PS();
+	set_material_new_picture_1();
+	//set_material_new_picture_1_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_PICTURE]), 1, cam_index);		// NEW OBJ_NEW_PICTURE
 	
-	set_material_cow_PS();
+	set_material_cow();
+	//set_material_cow_PS();
 	draw_static_object(&(static_objects[OBJ_COW]), 0, cam_index);
 
-	set_material_tiger_PS();
+	set_material_tiger();
+	//set_material_tiger_PS();
 	draw_animated_tiger(cam_index);
 
 	glUseProgram(0);
@@ -659,6 +679,24 @@ void timer_scene(int timestamp_scene) {
 }
 
 void mousepress(int button, int state, int x, int y) {
+	int shift_status = glutGetModifiers();
+	if ((button == GLUT_RIGHT_BUTTON)) {
+		if (state == GLUT_DOWN && shift_status == GLUT_ACTIVE_SHIFT){
+			cur_shader = h_ShaderProgram_GS;
+			cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_GS;
+			cur_loc_ModelViewMatrix = loc_ModelViewMatrix_GS;
+			cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_GS;
+			printf("Current shading is Gouraud shading\n");
+		}
+		else{
+			cur_shader = h_ShaderProgram_PS;
+			cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_PS;
+			cur_loc_ModelViewMatrix = loc_ModelViewMatrix_PS;
+			cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_PS;
+			printf("Current shading is Phong shading\n");
+		}
+	}
+
 	if ((button == GLUT_LEFT_BUTTON) && (state == GLUT_DOWN)) {
 		prevx = x, prevy = y;
 		leftbutton_pressed = 1;
@@ -1157,6 +1195,10 @@ void prepare_shader_program(void) {
 	loc_global_ambient_color_PS = glGetUniformLocation(h_ShaderProgram_PS, "u_global_ambient_color");
 
 	cur_shader = h_ShaderProgram_PS;
+	cur_loc_ModelViewProjectionMatrix = loc_ModelViewProjectionMatrix_PS;
+	cur_loc_ModelViewMatrix = loc_ModelViewMatrix_PS;
+	cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_PS;
+
 
 	h_ShaderProgram_GS = LoadShaders(shader_info_GS);
 	loc_ModelViewProjectionMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelViewProjectionMatrix");
