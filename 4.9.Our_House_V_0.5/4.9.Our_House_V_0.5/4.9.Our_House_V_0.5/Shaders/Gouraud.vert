@@ -54,7 +54,7 @@ vec4 lighting_equation(in vec3 P_EC, in vec3 N_EC) {
 			// 1-1.빛의 감쇠 처리
 			if (u_light[i].light_attenuation_factors.w  != zero_f) {
 				vec4 tmp_vec4;
-
+				// k0i*1.0 + k1i*||VPpli|| + k2i*||VPpli||^2 // k0i, k1i, k2i들은 light_attenuation_factors소속
 				tmp_vec4.x = one_f;
 				tmp_vec4.z = dot(L_EC, L_EC);	// 빛을 향하는 벡터의 크기의 제곱
 				tmp_vec4.y = sqrt(tmp_vec4.z);	// z를 sqrt해서 크기를 취함

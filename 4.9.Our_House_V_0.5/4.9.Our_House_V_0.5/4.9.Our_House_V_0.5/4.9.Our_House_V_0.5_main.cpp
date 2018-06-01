@@ -1549,6 +1549,11 @@ void set_up_scene_lights(void) {
 	light[0].specular_color[0] = 0.4f; light[0].specular_color[1] = 0.4f;
 	light[0].specular_color[2] = 0.4f; light[0].specular_color[3] = 1.0f;
 
+	light[0].light_attenuation_factors[0] = 1000.0f;
+	light[0].light_attenuation_factors[1] = 1.0f;
+	light[0].light_attenuation_factors[2] = 1.0f;
+	light[0].light_attenuation_factors[3] = 1.0f;
+
 	// spot_light_WC: use light 1 // 소 머리 위로 spot	// 215.0f, 110.0f
 	light[1].light_on = 1;
 	light[1].position[0] = 215.0f; light[1].position[1] = 110.0f; // spot light position in WC
@@ -1567,6 +1572,8 @@ void set_up_scene_lights(void) {
 	light[1].spot_direction[2] = -1.0f;
 	light[1].spot_cutoff_angle = 70.0f;
 	light[1].spot_exponent = 27.0f;
+
+
 
 	// spot_light_WC: use light 2 // 차위로 spot // 50.0f ,140.0f
 	light[2].light_on = 1;
