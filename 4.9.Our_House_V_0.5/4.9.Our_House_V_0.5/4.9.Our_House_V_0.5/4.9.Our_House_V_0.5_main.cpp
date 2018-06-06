@@ -166,9 +166,9 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 
 	if(flag_draw_screen){
 		set_material_screen();
-		ModelViewMatrix[cam_index] = glm::translate(ViewMatrix[cam_index], glm::vec3(80.0f, 80.0f, 0.0f));
-		ModelViewMatrix[cam_index] = glm::rotate(ModelViewMatrix[cam_index], -90.0f*TO_RADIAN, glm::vec3(0.0f, 1.0f, 0.0f));
-		ModelViewMatrix[cam_index] = glm::scale(ModelViewMatrix[cam_index], glm::vec3(30.0f, 30.0f, 50.0f));
+		ModelViewMatrix[cam_index] = glm::translate(ViewMatrix[cam_index], glm::vec3(210.0f, 145.0f, 0.0f));
+		ModelViewMatrix[cam_index] = glm::rotate(ModelViewMatrix[cam_index], 90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
+		ModelViewMatrix[cam_index] = glm::scale(ModelViewMatrix[cam_index], glm::vec3(10.0f, 30.0f, 50.0f));
 		ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
 		ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 		
@@ -220,7 +220,7 @@ void motion_car_along_path(int x, int y);
 #define CAR_MOV 1.0f
 
 void keyboard(unsigned char key, int x, int y) {
-	static int flag_cull_face = 0, polygon_fill_on = 0, depth_test_on = 0;
+	static int flag_cull_face = 0, polygon_fill_on = 1, depth_test_on = 0;
 
 	switch (key) {
 	case 27: // ESC key
@@ -1570,7 +1570,7 @@ void initialize_OpenGL(void) {
 
 	glEnable(GL_DEPTH_TEST); // Default state
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glClearColor(0.12f, 0.18f, 0.12f, 1.0f);
 
 	initialize_lights_and_material();
