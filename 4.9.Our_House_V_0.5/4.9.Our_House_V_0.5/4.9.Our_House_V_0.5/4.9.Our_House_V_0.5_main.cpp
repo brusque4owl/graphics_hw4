@@ -19,7 +19,9 @@ loc_Material_Parameters loc_material_PS;
 GLint loc_ModelMatrix_PS, loc_ModelMatrixInvTrans_PS, loc_ModelMatrix_GS, loc_ModelMatrixInvTrans_GS;
 GLint loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMatrixInvTrans_PS;
 GLint cur_loc_ModelMatrix, cur_loc_ModelMatrixInvTrans, cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
-
+GLint loc_screen_effect, loc_screen_width;
+GLint loc_blind_effect;
+GLfloat loc_blind_density;
 // for Gouraud Shading shaders
 #define NUMBER_OF_LIGHT_SUPPORTED 4 
 GLint loc_global_ambient_color_GS;
@@ -116,70 +118,68 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 	glUseProgram(cur_shader);
 
 	set_material_building();
-	//set_material_building_PS();
 	draw_static_object(&(static_objects[OBJ_BUILDING]), 0, cam_index);
 
 	set_material_table_0();
-	//set_material_table_0_PS();
 	draw_static_object(&(static_objects[OBJ_TABLE]), 0, cam_index);
 	set_material_table_1();
-	//set_material_table_1_PS();
 	draw_static_object(&(static_objects[OBJ_TABLE]), 1, cam_index);	// takes given teapot
 
 	set_material_light_0();
-	//set_material_light_0_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 0, cam_index);
 	set_material_light_1();
-	//set_material_light_1_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 1, cam_index);
 	set_material_light_2();
-	//set_material_light_2_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 2, cam_index);
 	set_material_light_3();
-	//set_material_light_3_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 3, cam_index);
 	set_material_light_4();
-	//set_material_light_4_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 4, cam_index);
 	set_material_light_5();
-	//set_material_light_5_PS();
 	draw_static_object(&(static_objects[OBJ_LIGHT]), 5, cam_index);			// NEW OBJ_LIGHT
 
 	set_material_teapot_0();
-	//set_material_teapot_0_PS();
 	draw_static_object(&(static_objects[OBJ_TEAPOT]), 0, cam_index);	// on the OBJ_TABLE 1
 	set_material_teapot_1();
-	//set_material_teapot_1_PS();
 	draw_static_object(&(static_objects[OBJ_TEAPOT]), 1, cam_index);			// NEW OBJ_TEAPOT
 	
 	set_material_new_chair_0();
-	//set_material_new_chair_0_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_CHAIR]), 0, cam_index);
 	set_material_new_chair_1();
-	//set_material_new_chair_1_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_CHAIR]), 1, cam_index);		// NEW OBJ_NEW_CHAIR
 	
 	set_material_frame_0();
-	//set_material_frame_0_PS();
 	draw_static_object(&(static_objects[OBJ_FRAME]), 0, cam_index);
 	set_material_frame_1();
-	//set_material_frame_1_PS();
 	draw_static_object(&(static_objects[OBJ_FRAME]), 1, cam_index);			// NEW OBJ_FRAME
 	
 	set_material_new_picture_0();
-	//set_material_new_picture_0_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_PICTURE]), 0, cam_index);
 	set_material_new_picture_1();
-	//set_material_new_picture_1_PS();
 	draw_static_object(&(static_objects[OBJ_NEW_PICTURE]), 1, cam_index);		// NEW OBJ_NEW_PICTURE
 	
 	set_material_cow();
-	//set_material_cow_PS();
 	draw_static_object(&(static_objects[OBJ_COW]), 0, cam_index);
 
 	set_material_tiger();
-	//set_material_tiger_PS();
 	draw_animated_tiger(cam_index);
+
+	if(flag_draw_screen){
+		set_material_screen();
+		ModelViewMatrix[cam_index] = glm::translate(ViewMatrix[cam_index], glm::vec3(80.0f, 80.0f, 0.0f));
+		ModelViewMatrix[cam_index] = glm::rotate(ModelViewMatrix[cam_index], -90.0f*TO_RADIAN, glm::vec3(0.0f, 1.0f, 0.0f));
+		ModelViewMatrix[cam_index] = glm::scale(ModelViewMatrix[cam_index], glm::vec3(30.0f, 30.0f, 50.0f));
+		ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
+		ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
+		
+		glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+		glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+		glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+
+		glUniform1i(loc_screen_effect, flag_screen_effect);
+		draw_screen();
+		glUniform1i(loc_screen_effect, 0);
+	}
 
 	glUseProgram(0);
 }
@@ -324,14 +324,14 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 
+	case 'm':					// change mode to moving_car
+		glutMotionFunc(motion_car_along_path);
+		glutPostRedisplay();
+		break;
+/*
 	case 's':					// change mode between CAMERA MODE and CCTV MODE
 		camera_selected = 7 - camera_selected;
 		view_mode = 1 - view_mode;
-		glutPostRedisplay();
-		break;
-
-	case 'm':					// change mode to moving_car
-		glutMotionFunc(motion_car_along_path);
 		glutPostRedisplay();
 		break;
 
@@ -340,7 +340,40 @@ void keyboard(unsigned char key, int x, int y) {
 			view_driver = 1 - view_driver;
 		glutPostRedisplay();
 		break;
-
+*/
+	case 's':
+		flag_draw_screen = 1 - flag_draw_screen;
+		glutPostRedisplay();
+		break;
+	case 'e':
+		if(flag_draw_screen){
+			flag_screen_effect = 1-flag_screen_effect;
+			glutPostRedisplay();
+		}
+		break;
+	case 'b':
+		flag_blind_effect = 1- flag_blind_effect;
+		glUseProgram(h_ShaderProgram_PS);
+		glUniform1i(loc_blind_effect, flag_blind_effect);
+		glUseProgram(0);
+		glutPostRedisplay();
+		break;
+	case 't':    // blind 밀도 증가
+		blind_density += 1.0f;
+		printf("blind_density = %f\n", blind_density);
+		glUseProgram(h_ShaderProgram_PS);
+		glUniform1f(loc_blind_density, blind_density);
+		glUseProgram(0);
+		glutPostRedisplay();
+		break;
+	case 'r':    // blind 밀도 감소
+		blind_density -= 1.0f;
+		printf("blind_density = %f\n", blind_density);
+		glUseProgram(h_ShaderProgram_PS);
+		glUniform1f(loc_blind_density, blind_density);
+		glUseProgram(0);
+		glutPostRedisplay();
+		break;
 	
 	case 'c':
 		flag_cull_face = (flag_cull_face + 1) % 3;
@@ -1219,6 +1252,10 @@ void prepare_shader_program(void) {
 	cur_loc_ModelViewMatrix = loc_ModelViewMatrix_PS;
 	cur_loc_ModelViewMatrixInvTrans = loc_ModelViewMatrixInvTrans_PS;
 
+	loc_screen_effect = glGetUniformLocation(h_ShaderProgram_PS, "screen_effect");
+	loc_screen_width = glGetUniformLocation(h_ShaderProgram_PS, "screen_width");
+	loc_blind_effect = glGetUniformLocation(h_ShaderProgram_PS, "u_blind_effect");
+	loc_blind_density = glGetUniformLocation(h_ShaderProgram_PS, "u_blind_density");
 
 	h_ShaderProgram_GS = LoadShaders(shader_info_GS);
 
@@ -1342,6 +1379,13 @@ void initialize_lights_and_material(void) { // follow OpenGL conventions for ini
 	glUniform4f(loc_material_GS.specular_color, 0.0f, 0.0f, 0.0f, 1.0f);
 	glUniform4f(loc_material_GS.emissive_color, 0.0f, 0.0f, 0.0f, 1.0f);
 	glUniform1f(loc_material_GS.specular_exponent, 0.0f); // [0.0, 128.0]
+
+	glUniform1i(loc_screen_effect, 0);
+	glUniform1f(loc_screen_width, 0.1f);
+
+	glUniform1i(loc_blind_effect, 0);
+	glUniform1f(loc_blind_density, 90.0f);
+
 	glUseProgram(0);
 }
 
@@ -1595,10 +1639,10 @@ void set_up_scene_lights(void) {
 	light[2].spot_cutoff_angle = 70.0f;
 	light[2].spot_exponent = 27.0f;
 	
-	// spot_light_WC: use light 3 // 190.0f, 60.0f
+	// spot_light_WC: use light 3 // 움직이는 호랑이
 	light[3].light_on = 1;
 
-	light[3].position[0] = 190.0f; light[3].position[1] = 60.0f; // spot light position in WC
+	light[3].position[0] = 60.0f; light[3].position[1] = 25.0f; // spot light position in WC
 	light[3].position[2] = 50.0f; light[3].position[3] = 1.0f;
 
 	light[3].ambient_color[0] = 0.2f; light[3].ambient_color[1] = 0.2f;
@@ -1667,22 +1711,28 @@ void set_up_scene_lights(void) {
 	position_EC = ModelMatrix * glm::vec4(light[3].position[0], light[3].position[1],
 		light[3].position[2], light[3].position[3]);
 	glUniform4fv(loc_light_PS[3].position, 1, &position_EC[0]);
+	
 	glUniform4fv(loc_light_PS[3].ambient_color, 1, light[3].ambient_color);
 	glUniform4fv(loc_light_PS[3].diffuse_color, 1, light[3].diffuse_color);
 	glUniform4fv(loc_light_PS[3].specular_color, 1, light[3].specular_color);
 	// need to supply direction in EC for shading in this example shader
 	// note that the viewing transform is a rigid body transform
 	// thus transpose(inverse(mat3(ViewMatrix)) = mat3(ViewMatrix)
-
+	// 호랑이 비치는 spot라이트는 MC에서 바꾸니까 display에서 업데이트 해주면 됨.
+	
+	
 	direction_EC = glm::mat3(ModelMatrix) * glm::vec3(light[3].spot_direction[0], light[3].spot_direction[1],
 		light[3].spot_direction[2]);
 	glUniform3fv(loc_light_PS[3].spot_direction, 1, &direction_EC[0]);
+	
+
 	glUniform1f(loc_light_PS[3].spot_cutoff_angle, light[3].spot_cutoff_angle);
 	glUniform1f(loc_light_PS[3].spot_exponent, light[3].spot_exponent);
 
 	glUseProgram(0);
 
 
+	// Gauraud Shading
 	glUseProgram(h_ShaderProgram_GS);
 	glUniform1i(loc_light_GS[0].light_on, light[0].light_on);
 	glUniform4fv(loc_light_GS[0].position, 1, light[0].position);
@@ -1752,6 +1802,7 @@ char car_nut[] = "Data/car_nut_triangles_v.txt";
 
 void prepare_scene(void) {
 	define_axes();
+	prepare_rectangle();
 	define_frustum_line();
 	define_static_objects();
 	define_animated_tiger();
@@ -1761,6 +1812,8 @@ void prepare_scene(void) {
 	prepare_path();
 	prepare_car_path();
 	set_up_scene_lights();
+	initialize_screen();
+	initialize_blind();
 }
 
 void initialize_renderer(void) {

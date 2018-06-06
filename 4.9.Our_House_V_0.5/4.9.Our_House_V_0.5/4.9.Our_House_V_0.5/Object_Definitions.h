@@ -598,6 +598,80 @@ void define_static_objects(void) {
 
 	n_static_objects = 8;
 }
+// rectangle object
+GLuint rectangle_VBO, rectangle_VAO;
+GLfloat rectangle_vertices[12][3] = {
+	{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+	{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+	{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}
+};
+Material_Parameters material_floor;
+Material_Parameters material_screen;
+
+void prepare_rectangle(void){
+	glGenBuffers(1, &rectangle_VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, rectangle_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), &rectangle_vertices[0][0], GL_STATIC_DRAW);
+	glGenVertexArrays(1, &rectangle_VAO);
+	glBindVertexArray(rectangle_VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, rectangle_VBO);
+	glVertexAttribPointer(LOC_VERTEX, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(LOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 6 *sizeof(float), BUFFER_OFFSET(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	material_screen.ambient_color[0] = 0.17f; material_screen.ambient_color[1] = 0.01f; 
+	material_screen.ambient_color[2] = 0.01f; material_screen.ambient_color[3] = 1.0f;
+
+	material_screen.diffuse_color[0] = 0.61f; material_screen.diffuse_color[1] = 0.01f;
+	material_screen.diffuse_color[2] = 0.01f; material_screen.diffuse_color[3] = 1.0f;
+
+	material_screen.specular_color[0] = 0.72f; material_screen.specular_color[1] = 0.62f;
+	material_screen.specular_color[2] = 0.62f; material_screen.specular_color[3] = 1.0f;
+
+	material_screen.specular_exponent = 20.5f;
+
+	material_screen.emissive_color[0] = 0.0f; material_screen.emissive_color[1] = 0.0f;
+	material_screen.emissive_color[2] = 0.0f; material_screen.emissive_color[3] = 1.0f;
+
+}
+int flag_draw_screen, flag_screen_effect, flag_blind_effect;
+float blind_density;
+float screen_width;
+
+
+void set_material_screen(void){
+	glUniform4fv(loc_material_PS.ambient_color, 1, material_screen.ambient_color);
+	glUniform4fv(loc_material_PS.diffuse_color, 1, material_screen.diffuse_color);
+	glUniform4fv(loc_material_PS.specular_color, 1, material_screen.specular_color);
+	glUniform1f(loc_material_PS.specular_exponent, material_screen.specular_exponent);
+	glUniform4fv(loc_material_PS.emissive_color, 1, material_screen.emissive_color);
+}
+
+void draw_screen(void){
+	glFrontFace(GL_CCW);
+
+	glBindVertexArray(rectangle_VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+}
+
+void initialize_screen(void){
+	flag_draw_screen = flag_screen_effect = 0;
+	screen_width = 0.125f;
+}
+
+void initialize_blind(void){
+	flag_blind_effect = 0;
+	blind_density = 90.0f;
+
+}
+
 
 // set_material_xxx_#_PS functions
 void set_material_building_PS(void) {
@@ -1235,20 +1309,15 @@ void draw_animated_tiger(int cam_index) {
 
 	ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
-	/*
-	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
-	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
-	*/
-	
+		
 	ModelMatrix = tiger[tiger_data.cur_frame].ModelMatrix[0];
 	ModelMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelMatrix));
 	glUniformMatrix3fv(cur_loc_ModelMatrixInvTrans, 1, GL_FALSE, &ModelMatrixInvTrans[0][0]);
 	glUniformMatrix4fv(cur_loc_ModelMatrix, 1, GL_FALSE, &ModelMatrix[0][0]);
 	
 	glUniformMatrix4fv(cur_loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	//glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
-	//glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
+	glUniformMatrix4fv(cur_loc_ModelViewMatrix, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
+	glUniformMatrix3fv(cur_loc_ModelViewMatrixInvTrans, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	
 	/*
 	glUniform3f(loc_primitive_color, tiger[tiger_data.cur_frame].material[0].diffuse_color[0],
@@ -1260,6 +1329,7 @@ void draw_animated_tiger(int cam_index) {
 
 	ModelViewProjectionMatrix = glm::scale(ModelViewProjectionMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
+
 }
 
 // DRAW CAR BODY, WHEEL, NUT
@@ -1660,12 +1730,6 @@ void draw_wheel_and_nut(int cam_index) {
 		ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_NUT;
 		glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 
-		//glUniform3f(loc_primitive_color, 0.690f, 0.769f, 0.871f); // color name: LightSteelBlue
-		/*
-		glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-		glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
-		glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
-		*/
 		ModelMatrix = ModelMatrix_CAR_NUT;
 		ModelMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelMatrix));
 		glUniformMatrix3fv(cur_loc_ModelMatrixInvTrans, 1, GL_FALSE, &ModelMatrixInvTrans[0][0]);
@@ -1691,12 +1755,7 @@ void draw_car_dummy(int cam_index) {  // 앞쪽이 약간 내려가있음. 뒤쪽은 평평
 
 	ModelViewProjectionMatrix = ViewProjectionMatrix[cam_index] * ModelMatrix_CAR_BODY;
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	//glUniform3f(loc_primitive_color, 0.498f, 1.000f, 0.831f); // color name: Aquamarine
-	/*
-	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_PS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	glUniformMatrix4fv(loc_ModelViewMatrix_PS, 1, GL_FALSE, &ModelViewMatrix[cam_index][0][0]);
-	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_PS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
-	*/
+
 	ModelMatrix = ModelMatrix_CAR_BODY;
 	ModelMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelMatrix));
 	glUniformMatrix3fv(cur_loc_ModelMatrixInvTrans, 1, GL_FALSE, &ModelMatrixInvTrans[0][0]);
