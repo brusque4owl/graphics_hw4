@@ -354,20 +354,24 @@ void keyboard(unsigned char key, int x, int y) {
 		}
 		break;
 	case 'q': // screen 밀도 변경
-		screen_density += 0.1f;
-		printf("screen_density = %f\n", screen_density);
-		glUseProgram(h_ShaderProgram_PS);
-		glUniform1f(loc_screen_density, screen_density);
-		glUseProgram(0);
-		glutPostRedisplay();
+		if(flag_screen_effect){
+			screen_density += 0.1f;
+			printf("screen_density = %f\n", screen_density);
+			glUseProgram(h_ShaderProgram_PS);
+			glUniform1f(loc_screen_density, screen_density);
+			glUseProgram(0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'w': // screen 밀도 변경
-		screen_density -= 0.1f;
-		printf("screen_density = %f\n", screen_density);
-		glUseProgram(h_ShaderProgram_PS);
-		glUniform1f(loc_screen_density, screen_density);
-		glUseProgram(0);
-		glutPostRedisplay();
+		if (flag_screen_effect) {
+			screen_density -= 0.1f;
+			printf("screen_density = %f\n", screen_density);
+			glUseProgram(h_ShaderProgram_PS);
+			glUniform1f(loc_screen_density, screen_density);
+			glUseProgram(0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'b':
 		flag_blind_effect = 1- flag_blind_effect;
@@ -1658,7 +1662,7 @@ void set_up_scene_lights(void) {
 	light[2].spot_cutoff_angle = 70.0f;
 	light[2].spot_exponent = 27.0f;
 	
-	// spot_light_WC: use light 3 // 움직이는 호랑이
+	// spot_light_WC: use light 3 
 	light[3].light_on = 1;
 
 	light[3].position[0] = 60.0f; light[3].position[1] = 25.0f; // spot light position in WC
