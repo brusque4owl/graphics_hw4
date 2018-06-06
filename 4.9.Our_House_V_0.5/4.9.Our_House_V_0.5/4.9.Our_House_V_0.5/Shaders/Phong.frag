@@ -24,7 +24,8 @@ uniform LIGHT u_light[NUMBER_OF_LIGHTS_SUPPORTED];
 uniform MATERIAL u_material;
 
 uniform bool screen_effect = false;
-uniform float screen_width = 0.125f;
+uniform float screen_width = 0.1f;
+uniform float screen_density = 1.0f;
 
 uniform bool u_blind_effect = false;
 uniform float u_blind_density = 90.0f;
@@ -112,15 +113,16 @@ void main(void) {
 	// final_color = vec4(gl_FragCoord.x/800.0f, gl_FragCoord.y/800.0f, 0.0f, 1.0f); // what is this?
     // final_color = vec4(0.0f,  0.0f, 1.0 - gl_FragCoord.z/1.0f, 1.0f); // what is this?
 	
-	/*////////////////////////////////////////////////
 	if(screen_effect){
+		
 		float x_mod, y_mod;
-		x_mod = mod(v_position_sc.x*3.0f, 1.0f);
-		y_mod = mod(v_position_sc.y*2.0f, 1.0f);
-
-		if( (x_mod>screen_width) && (x_mod < 1.0f-screen_width) && (y_mod>screen_width) && (y_mod<1.0f-screen-width))
+		
+		x_mod = mod(v_position_sc.x*3.0f, screen_density);
+		y_mod = mod(v_position_sc.y*2.0f, screen_density);
+		
+		if( (x_mod > screen_width) && (x_mod < 1.0f-screen_width) && (y_mod > screen_width) && (y_mod < 1.0f-screen_width) )
 			discard;
+		
 	}
-	*////////////////////////////////////////////////////////
 	final_color = lighting_equation(v_position_EC, normalize(v_normal_EC)); // for normal rendering
 }

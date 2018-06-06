@@ -21,7 +21,7 @@ GLint loc_ModelViewProjectionMatrix_PS, loc_ModelViewMatrix_PS, loc_ModelViewMat
 GLint cur_loc_ModelMatrix, cur_loc_ModelMatrixInvTrans, cur_loc_ModelViewProjectionMatrix, cur_loc_ModelViewMatrix, cur_loc_ModelViewMatrixInvTrans;
 GLint loc_screen_effect, loc_screen_width;
 GLint loc_blind_effect;
-GLfloat loc_blind_density;
+GLfloat loc_blind_density, loc_screen_density;
 // for Gouraud Shading shaders
 #define NUMBER_OF_LIGHT_SUPPORTED 4 
 GLint loc_global_ambient_color_GS;
@@ -166,9 +166,9 @@ void display_camera(int cam_index) { // display()함수로 인해 매초마다 불러짐.
 
 	if(flag_draw_screen){
 		set_material_screen();
-		ModelViewMatrix[cam_index] = glm::translate(ViewMatrix[cam_index], glm::vec3(210.0f, 145.0f, 0.0f));
+		ModelViewMatrix[cam_index] = glm::translate(ViewMatrix[cam_index], glm::vec3(190.0f, 145.0f, 0.0f));
 		ModelViewMatrix[cam_index] = glm::rotate(ModelViewMatrix[cam_index], 90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
-		ModelViewMatrix[cam_index] = glm::scale(ModelViewMatrix[cam_index], glm::vec3(10.0f, 30.0f, 50.0f));
+		ModelViewMatrix[cam_index] = glm::scale(ModelViewMatrix[cam_index], glm::vec3(30.0f, 30.0f, 30.0f));
 		ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix[cam_index]));
 		ModelViewProjectionMatrix = ProjectionMatrix[cam_index] * ModelViewMatrix[cam_index];
 		
@@ -348,8 +348,26 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'e':
 		if(flag_draw_screen){
 			flag_screen_effect = 1-flag_screen_effect;
+			//glUniform1i(loc_screen_effect, flag_screen_effect);
+			printf("flag_screen_effect = %d\n", flag_screen_effect);
 			glutPostRedisplay();
 		}
+		break;
+	case 'q': // screen 밀도 변경
+		screen_density += 0.1f;
+		printf("screen_density = %f\n", screen_density);
+		glUseProgram(h_ShaderProgram_PS);
+		glUniform1f(loc_screen_density, screen_density);
+		glUseProgram(0);
+		glutPostRedisplay();
+		break;
+	case 'w': // screen 밀도 변경
+		screen_density -= 0.1f;
+		printf("screen_density = %f\n", screen_density);
+		glUseProgram(h_ShaderProgram_PS);
+		glUniform1f(loc_screen_density, screen_density);
+		glUseProgram(0);
+		glutPostRedisplay();
 		break;
 	case 'b':
 		flag_blind_effect = 1- flag_blind_effect;
@@ -1254,9 +1272,9 @@ void prepare_shader_program(void) {
 
 	loc_screen_effect = glGetUniformLocation(h_ShaderProgram_PS, "screen_effect");
 	loc_screen_width = glGetUniformLocation(h_ShaderProgram_PS, "screen_width");
+	loc_screen_density = glGetUniformLocation(h_ShaderProgram_PS, "screen_density");
 	loc_blind_effect = glGetUniformLocation(h_ShaderProgram_PS, "u_blind_effect");
 	loc_blind_density = glGetUniformLocation(h_ShaderProgram_PS, "u_blind_density");
-
 	h_ShaderProgram_GS = LoadShaders(shader_info_GS);
 
 	loc_ModelMatrix_GS = glGetUniformLocation(h_ShaderProgram_GS, "u_ModelMatrix");
@@ -1382,6 +1400,7 @@ void initialize_lights_and_material(void) { // follow OpenGL conventions for ini
 
 	glUniform1i(loc_screen_effect, 0);
 	glUniform1f(loc_screen_width, 0.1f);
+	glUniform1f(loc_screen_density, 1.0f);
 
 	glUniform1i(loc_blind_effect, 0);
 	glUniform1f(loc_blind_density, 90.0f);

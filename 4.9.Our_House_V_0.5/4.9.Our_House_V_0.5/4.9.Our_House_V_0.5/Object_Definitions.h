@@ -605,7 +605,6 @@ GLfloat rectangle_vertices[12][3] = {
 	{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
 	{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}
 };
-Material_Parameters material_floor;
 Material_Parameters material_screen;
 
 void prepare_rectangle(void){
@@ -641,7 +640,7 @@ void prepare_rectangle(void){
 
 }
 int flag_draw_screen, flag_screen_effect, flag_blind_effect;
-float blind_density;
+float blind_density, screen_density;
 float screen_width;
 
 
@@ -664,6 +663,7 @@ void draw_screen(void){
 void initialize_screen(void){
 	flag_draw_screen = flag_screen_effect = 0;
 	screen_width = 0.125f;
+	screen_density = 1.0f;
 }
 
 void initialize_blind(void){
