@@ -27,6 +27,9 @@ uniform mat4 u_ModelViewProjectionMatrix;
 uniform mat4 u_ModelViewMatrix;
 uniform mat3 u_ModelViewMatrixInvTrans;  
 
+uniform mat4 u_ModelMatrix;
+uniform mat3 u_ModelMatrixInvTrans;  
+
 const float zero_f = 0.0f;
 const float one_f = 1.0f;
 
@@ -113,9 +116,10 @@ vec4 lighting_equation(in vec3 P_EC, in vec3 N_EC) {
 }
 
 void main(void) {	
-	vec3 position_EC = vec3(u_ModelViewMatrix*vec4(a_position, one_f));
-	vec3 normal_EC = normalize(u_ModelViewMatrixInvTrans*a_normal);  
-
+	
+	vec3 position_EC = vec3(u_ModelMatrix*vec4(a_position, 1.0f));
+	vec3 normal_EC = normalize(u_ModelMatrixInvTrans*a_normal);  
+	
 	v_shaded_color = lighting_equation(position_EC, normal_EC);
 	gl_Position = u_ModelViewProjectionMatrix*vec4(a_position, one_f);
 }
